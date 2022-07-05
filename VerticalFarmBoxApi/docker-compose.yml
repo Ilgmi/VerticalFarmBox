@@ -1,0 +1,26 @@
+version: "3"
+
+services:
+
+  mosquitto:
+    image: eclipse-mosquitto
+    container_name: mqtt
+    volumes:
+      - ./mosquitto-config/config:/mosquitto/config
+      - ./mosquitto-config/data:/mosquitto/data
+      - ./mosquitto-config/log:/mosquitto/log
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+
+  mongodb:
+    image: mongo
+    container_name: mongoDb
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    volumes:
+      - ./mongo-volume:/data/db
+    ports:
+      - "27017-27019:27017-27019"

@@ -1,4 +1,9 @@
 from fastapi import FastAPI
+import paho.mqtt.client as mqtt
+from pymongo import MongoClient
+# pprint library is used to make the output look more pretty
+from pprint import pprint
+
 
 app = FastAPI()
 
