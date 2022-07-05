@@ -4,9 +4,11 @@ from pymongo import MongoClient
 # pprint library is used to make the output look more pretty
 from pprint import pprint
 
+from verticalfarm.vertical_farm import VerticalFarm
 
 app = FastAPI()
 
+verticalFarm = VerticalFarm()
 
 @app.get("/")
 async def root():
