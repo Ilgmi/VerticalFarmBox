@@ -1,8 +1,6 @@
 from abc import abstractmethod
 from datetime import datetime
 
-from simulation.box import Box
-
 
 class Sensor:
     type_id: str
@@ -33,7 +31,12 @@ class Sensor:
         }
         return message
 
-    def get_register_message(self, box: Box):
+    def get_register_message(self, box: any):
         return {
-            "building": box.building
+            "building": box.building,
+            "room": box.room,
+            "name": box.name,
+            "type_id": self.type_id,
+            "instance_id": self.instance_id,
+            "sensor_type": self.sensor_type,
         }

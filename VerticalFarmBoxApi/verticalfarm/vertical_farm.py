@@ -16,6 +16,7 @@ class VerticalFarm:
         self.connectToMQTT()
         self.connectToDB()
         # self.gateway.on_box_register(self.on_box_register)
+        self.gateway.on_sensor_receive_data(self.on_sensor_receive_data)
 
     def connectToMQTT(self):
         self.gateway = Gateway()
@@ -48,3 +49,9 @@ class VerticalFarm:
         print("Vertical Farm Register Box")
         print("TODO: Handle to save the message to the database")
         print(message)
+
+    def get_sensors(self, box_name):
+        box = self.dbClient.boxes.get()
+
+    def on_sensor_receive_data(self, message):
+        self.dbClient.add_sensor_data(message)

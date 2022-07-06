@@ -21,9 +21,9 @@ class TemperatureSensor(Sensor):
 
     def get_value_message(self):
         return {
-            self.unit: self.sense()
+            "unit": self.unit,
+            "value": self.sense()
         }
-        pass
 
     def simpleRandom(self):
         value = self.minTemperature + (random() * ((self.maxTemperature - self.minTemperature)))

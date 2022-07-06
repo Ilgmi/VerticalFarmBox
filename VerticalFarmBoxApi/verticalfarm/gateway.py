@@ -12,6 +12,7 @@ class Gateway:
 
     on_sensor_register_call_back = []
     on_box_register_call_back = []
+    on_sensor_receive_data_call_back = []
 
     def connectToMQTT(self):
 
@@ -25,6 +26,7 @@ class Gateway:
 
         self.mqtt_client.subscribe("register/+/+/+/+/+", qos=2)
         self.mqtt_client.subscribe("register/+/+/+/", qos=2)
+        self.mqtt_client.subscribe("+/+/+/+/+", qos=2)
         self.mqtt_client.loop_start()
 
     def __del__(self):
@@ -42,6 +44,8 @@ class Gateway:
         print(json.loads(message.payload.decode()))
         if re.match(r"^register\/([a-zA-Z0-9])+\/([a-zA-Z0-9.])+\/Box[0-9]+\/$", message.topic):
             self.__on_box_register(message)
+        else:
+            self.__on_sensor_receive_data(message)
 
     def __on_box_register(self, message):
         data = json.loads(message.payload.decode(), object_hook=lambda d: RegisterBoxMessage(**d))
@@ -53,8 +57,16 @@ class Gateway:
         t = json.loads(message.payload.decode(), object_hook=lambda d: RegisterSensorMessage(**d))
         print(t['type_id'])
 
+    def __on_sensor_receive_data(self, message):
+        data = json.loads(message.payload.decode())
+        for func in self.on_sensor_receive_data_call_back:
+            func(data)
+
     def on_box_register(self, func):
         self.on_box_register_call_back.append(func)
 
     def on_sensor_register(self, func):
         self.on_sensor_register_call_back.append(func)
+
+    def on_sensor_receive_data(self, func):
+        self.on_sensor_receive_data_call_back.append(func)

@@ -29,13 +29,15 @@ class RegisterSensorMessage:
     name: str
     type_id: str
     instance_id: str
+    sensor_type: str
 
-    def __init__(self, building, room, name, type_id, instance_id):
+    def __init__(self, building, room, name, type_id, instance_id, sensor_type):
         self.building = building
         self.room = room
         self.name = name
         self.type_id = type_id
         self.instance_id = instance_id
+        self.sensor_type = sensor_type
 
     def get_key(self) -> str:
         return self.building + "/" + self.room + "/" + self.name + "/" + self.instance_id
