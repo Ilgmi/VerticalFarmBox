@@ -27,38 +27,30 @@ class RegisterSensorMessage:
     building: str
     room: str
     name: str
-    sensor_type: str
+    type_id: str
     instance_id: str
 
-    def __init__(self, building, room, name, sensor_type, instance_id):
+    def __init__(self, building, room, name, type_id, instance_id):
         self.building = building
         self.room = room
         self.name = name
-        self.sensor_type = sensor_type
+        self.type_id = type_id
         self.instance_id = instance_id
 
     def get_key(self) -> str:
-        return self.building + "/" + self.room + "/" + self.name
+        return self.building + "/" + self.room + "/" + self.name + "/" + self.instance_id
 
 
-class Message:
+class SensorDataMessage:
     type_id: str
+    sensor_type: str
     instance_id: str
-    sensor_type: SensorTypes
     timestamp: datetime
     value: any
 
-    def __init__(self, type_id, instance_id, sensor_type: SensorTypes, timestamp: datetime, value: any):
+    def __init__(self, type_id, sensor_type, instance_id, timestamp: datetime, value: any):
         self.type_id = type_id
-        self.instance_id = instance_id
         self.sensor_type = sensor_type
+        self.instance_id = instance_id
         self.timestamp = timestamp
         self.value = value
-
-
-class RegisterMessage(Message):
-    location: str
-
-    def __init__(self, type_id, instance_id, sensor_type: SensorTypes, timestamp: datetime, value: any, location: str):
-        super().__init__(type_id, instance_id, sensor_type, timestamp, value)
-        self.location = location

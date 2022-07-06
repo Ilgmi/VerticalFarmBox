@@ -4,7 +4,7 @@ from datetime import datetime
 
 import paho.mqtt.client as mqtt
 
-from verticalfarm.message import Message, RegisterMessage, RegisterBoxMessage
+from verticalfarm.messages import SensorDataMessage, RegisterBoxMessage, RegisterSensorMessage
 
 
 class Gateway:
@@ -44,13 +44,13 @@ class Gateway:
             self.__on_box_register(message)
 
     def __on_box_register(self, message):
-        data = json.loads(message.payload.decode(), RegisterBoxMessage)
+        data = json.loads(message.payload.decode(), object_hook=lambda d: RegisterBoxMessage(**d))
         print("register box")
         for func in self.on_box_register_call_back:
             func(data)
 
     def __on_sensor_register(self, message):
-        t = json.loads(message.payload.decode())
+        t = json.loads(message.payload.decode(), object_hook=lambda d: RegisterSensorMessage(**d))
         print(t['type_id'])
 
     def on_box_register(self, func):

@@ -1,4 +1,4 @@
-from verticalfarm.message import Message, RegisterBoxMessage
+from verticalfarm.messages import SensorDataMessage, RegisterBoxMessage
 
 
 class DBConnector:
@@ -8,7 +8,12 @@ class DBConnector:
 
     def add_box(self, message: RegisterBoxMessage):
         key = message.get_key()
-        self.boxes[key] = message
+        self.boxes[key] = {
+            "building": message.building,
+            "room": message.room,
+            "name": message.name
+        }
+        print(self.boxes)
 
     def add_sensor(self, building, room, name, sensor_type, instance_id):
         key = building + "/" + room + "/" + name + "/" + instance_id
@@ -20,6 +25,6 @@ class DBConnector:
             sensor_type: sensor_type
         }
 
-    def add_sensor_data(self, message: Message):
+    def add_sensor_data(self, message: SensorDataMessage):
         self.sensor_datas.append(message)
 
