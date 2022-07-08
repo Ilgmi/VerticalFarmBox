@@ -24,8 +24,6 @@ class Gateway:
         self.mqtt_client.username_pw_set("admin", "password")
         self.mqtt_client.connect("mosquitto", 1883, 70)
 
-        self.mqtt_client.subscribe("register/+/+/+/+/+", qos=2)
-        self.mqtt_client.subscribe("register/+/+/+/", qos=2)
         self.mqtt_client.subscribe("+/+/+/+/+", qos=2)
         self.mqtt_client.loop_start()
 
@@ -60,7 +58,7 @@ class Gateway:
     def __on_sensor_receive_data(self, message):
         data = json.loads(message.payload.decode())
         for func in self.on_sensor_receive_data_call_back:
-            func(data)
+            func(message.topic, data)
 
     def on_box_register(self, func):
         self.on_box_register_call_back.append(func)

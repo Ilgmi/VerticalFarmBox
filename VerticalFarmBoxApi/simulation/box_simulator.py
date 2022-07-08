@@ -60,6 +60,6 @@ class BoxSimulator:
 
 
 print("Start Simulation")
-box = BoxSimulator(10)
+box = BoxSimulator(5)
 box.init()
 box.start()

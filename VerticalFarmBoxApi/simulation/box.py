@@ -27,13 +27,13 @@ class Box:
         self.building = building
         self.room = room
         self.name = name
-        self.moisture = MoistureSensor(1)
-        self.ph = PHSensor(1)
-        self.humidity = HumiditySensor(1)
-        self.water_level = WaterLevelSensor(1)
-        self.temperature = TemperatureSensor(20, 10, 16, 35, 1)
-        self.display = Display(1)
-        self.water_pump = WaterPump(1)
+        self.moisture = MoistureSensor("1")
+        self.ph = PHSensor("1")
+        self.humidity = HumiditySensor("1")
+        self.water_level = WaterLevelSensor("1")
+        self.temperature = TemperatureSensor(20, 10, 16, 35, "1")
+        self.display = Display("1")
+        self.water_pump = WaterPump("1")
 
     def get_key(self):
         return self.building + "/" + self.room + "/" + self.name + "/"

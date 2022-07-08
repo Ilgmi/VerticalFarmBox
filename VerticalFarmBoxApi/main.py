@@ -38,6 +38,10 @@ async def say_hello(name: str):
 async def get_boxes():
     return verticalFarm.get_boxes()
 
+@app.get("/api/{building}/{room}/{box}")
+async def get_boxes(building, room, box):
+    return verticalFarm.get_box(building + "/" + room + "/" + box)
+
 
 @app.post("/api/boxes")
 async def add_box(box: RegisterBoxMessage):
