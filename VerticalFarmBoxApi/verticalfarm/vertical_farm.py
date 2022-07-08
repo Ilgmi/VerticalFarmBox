@@ -3,6 +3,7 @@ import json
 from pymongo import MongoClient
 
 from ai.Planner import Planner
+from verticalfarm.context_component import ContextComponent
 from verticalfarm.db_connector import DBConnector
 from verticalfarm.gateway import Gateway
 from verticalfarm.messages import RegisterBoxMessage, RegisterSensorMessage, SensorDataMessage
@@ -80,6 +81,22 @@ class VerticalFarm:
         if self.dbClient.has_box(box_key):
             self.dbClient.add_sensor_data(message)
             box = self.dbClient.get_box(box_key)
+
+            # TODO: use context to create values
+            newValue = ContextComponent.map(keys[3], message["value"]["value"])
+            # TODO: update current box values
+
+            if keys[3] == "temperature":
+                box.temperature = newValue
+            elif keys[3] == "humidity":
+                box.humidity = newValue
+            elif keys[3] == "moisture":
+                box.plant.moisture_level = newValue
+            elif keys[3] == "light":
+                box.light = newValue
+
+            # TODO: if state change calc solution for problem
+            # TODO: send action to sensors
 
 
 
