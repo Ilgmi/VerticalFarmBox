@@ -1,3 +1,6 @@
+from verticalfarm.box import MoistureLevel
+
+
 class ContextComponent:
     plant: str
 
@@ -9,7 +12,10 @@ class ContextComponent:
             "moisture": ContextComponent.map_moisture,
             "light": ContextComponent.map_light,
         }
-        return actions[sensor_type](value)
+        action = actions[sensor_type](value)
+        if action is None:
+            return value
+        return action(value)
 
     @staticmethod
     def map_temperature(value) -> int:
@@ -20,8 +26,13 @@ class ContextComponent:
         return value
 
     @staticmethod
-    def map_moisture(value) -> int:
-        return value
+    def map_moisture(value) -> MoistureLevel:
+        if value < 400:
+            return MoistureLevel.dry
+        if value >= 400 <= 700:
+            return MoistureLevel.wet
+
+        return MoistureLevel.very_wet
 
     @staticmethod
     def map_light(value) -> int:

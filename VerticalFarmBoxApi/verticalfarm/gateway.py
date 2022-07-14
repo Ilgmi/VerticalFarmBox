@@ -68,3 +68,6 @@ class Gateway:
 
     def on_sensor_receive_data(self, func):
         self.on_sensor_receive_data_call_back.append(func)
+
+    def send_action(self, topic, action):
+        self.mqtt_client.publish(topic, json.dumps(action))

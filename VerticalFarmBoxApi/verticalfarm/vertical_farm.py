@@ -3,10 +3,12 @@ import json
 from pymongo import MongoClient
 
 from ai.Planner import Planner
+from verticalfarm.box import MoistureLevel
 from verticalfarm.context_component import ContextComponent
 from verticalfarm.db_connector import DBConnector
 from verticalfarm.gateway import Gateway
 from verticalfarm.messages import RegisterBoxMessage, RegisterSensorMessage, SensorDataMessage
+from verticalfarm.orchestrator import Orchestrator
 
 
 class VerticalFarm:
@@ -14,6 +16,7 @@ class VerticalFarm:
     dbClient: DBConnector
     vertical_farmDb: any
     planner: Planner
+    orchestrator: Orchestrator
 
     def __init__(self):
         self.connectToMQTT()
@@ -21,6 +24,7 @@ class VerticalFarm:
         # self.gateway.on_box_register(self.on_box_register)
         self.gateway.on_sensor_receive_data(self.on_sensor_receive_data)
         self.planner = Planner()
+        self.orchestrator = Orchestrator(self.gateway)
 
         test = self.planner.solve()
         x = 1
@@ -83,20 +87,29 @@ class VerticalFarm:
             box = self.dbClient.get_box(box_key)
 
             # TODO: use context to create values
-            newValue = ContextComponent.map(keys[3], message["value"]["value"])
+            new_value = ContextComponent.map(keys[3], message["value"]["value"])
             # TODO: update current box values
 
+            possible_state_change = False
+
             if keys[3] == "temperature":
-                box.temperature = newValue
+                possible_state_change = abs(box.temperature - new_value > 2)
+                box.temperature = new_value
             elif keys[3] == "humidity":
-                box.humidity = newValue
+                possible_state_change = abs(box.humidity - new_value) > 10
+                box.humidity = new_value
             elif keys[3] == "moisture":
-                box.plant.moisture_level = newValue
+                possible_state_change = new_value == MoistureLevel.dry
+                box.plant.moisture_level = new_value
             elif keys[3] == "light":
-                box.light = newValue
+                possible_state_change = abs(box.light - new_value) > 10
+                box.light = new_value
+            elif keys[3] == "roof":
+                box.roof = new_value
 
             # TODO: if state change calc solution for problem
+            if possible_state_change:
+                test = 1
             # TODO: send action to sensors
-
-
-
+            if possible_state_change:
+                test = 2
