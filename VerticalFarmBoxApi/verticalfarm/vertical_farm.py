@@ -2,7 +2,7 @@ import json
 
 from pymongo import MongoClient
 
-from ai.Planner import Planner
+from ai.planner import Planner
 from verticalfarm.box import MoistureLevel
 from verticalfarm.context_component import ContextComponent
 from verticalfarm.db_connector import DBConnector
