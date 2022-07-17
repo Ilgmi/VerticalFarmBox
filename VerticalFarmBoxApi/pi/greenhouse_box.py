@@ -1,4 +1,4 @@
-import json
+import json, time
 from threading import Thread
 
 import requests
@@ -51,6 +51,10 @@ class GreenhouseBox:
         print(f"Try to register to {ip}")
         self.mqttClient = MQTTClient(self.name, ip)
         self.mqttClient.connectToMQTT()
+
+        print("Wait for connection ...")
+        time.sleep(5)
+
         msg = json.dumps({
             "building": self.building,
             "room": self.room,
@@ -61,17 +65,15 @@ class GreenhouseBox:
 
         type_id = "de.uni-stuttgart.iaas.sc"
 
-        t = Thread(target=lambda: self.udpClient.wait_for_backend_requests(self.backend_ip))
-        t.start()
-
-        # self.sensors.append(Temperature(self.mqttClient, self.building, self.room, self.name, type_id, "1"))
-        # self.sensors.append(Humidity(self.mqttClient, self.building, self.room, self.name, type_id, "1"))
-        # self.sensors.append(Moisture(self.mqttClient, self.building, self.room, self.name, type_id, "1"))
-        # self.sensors.append(Light(self.mqttClient, self.building, self.room, self.name, type_id, "1"))
+        self.sensors.append(Temperature(self.mqttClient, self.building, self.room, self.name, type_id, "1"))
+        self.sensors.append(Humidity(self.mqttClient, self.building, self.room, self.name, type_id, "1"))
+        self.sensors.append(Moisture(self.mqttClient, self.building, self.room, self.name, type_id, "1"))
+        self.sensors.append(Light(self.mqttClient, self.building, self.room, self.name, type_id, "1"))
 
         # self.actuators.append(WaterPump(self.mqttClient, self.building, self.room, self.name, type_id))
         # self.actuators.append(Display(self.mqttClient, self.building, self.room, self.name, type_id))
         # self.actuators.append(Roof(self.mqttClient, self.building, self.room, self.name, type_id))
+
 
         return result.ok
 

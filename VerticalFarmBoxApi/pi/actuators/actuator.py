@@ -20,7 +20,7 @@ class Actuator:
         print(f"Init actuator: type: '{type_id}' sensor_type:'{sensor_type}' instance: '{instance_id} ")
 
     def get_topic(self):
-        return f"/{self.building}/{self.room}/{self.name}/{self.sensor_type}/{self.instance_id}/"
+        return f"{self.building}/{self.room}/{self.name}/{self.sensor_type}/{self.instance_id}"
 
     @abstractmethod
     def init(self):

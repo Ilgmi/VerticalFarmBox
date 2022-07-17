@@ -29,40 +29,40 @@ class RegisterSensorMessage(BaseModel):
 
 
 @app.get("/")
-def root():
+async def root():
     return {"message": "Hello World"}
 
 
 @app.get("/hello/{name}")
-def say_hello(name: str):
+async def say_hello(name: str):
     return {"message": f"Hello {name}"}
 
 
 @app.get("/api/boxes/")
-def get_boxes(skip: int = 0, limit: int = 10):
+async def get_boxes(skip: int = 0, limit: int = 10):
     b = verticalFarm.get_boxes(skip, limit)
     return b
 
 
 @app.get("/api/buildings/{building}/rooms/{room}/boxes/{box}")
-def get_box(building, room, box):
+async def get_box(building, room, box):
     return verticalFarm.get_box(building + "/" + room + "/" + box)
 
 
 @app.post("/api/boxes")
-def add_box(box: RegisterBoxMessage):
+async def add_box(box: RegisterBoxMessage):
     verticalFarm.on_box_register(messages.RegisterBoxMessage(box.building, box.room, box.name))
 
     return box
 
 
 @app.get("/api/boxes/{box_name}/sensors")
-def get_sernsors_from_boxes(box_name: str):
+async def get_sernsors_from_boxes(box_name: str):
     return verticalFarm.get_sensors(box_name)
 
 
 @app.post("/api/boxes/{box_name}/sensors/")
-def add_sensor(box_name: str, sensor: RegisterSensorMessage):
+async def add_sensor(box_name: str, sensor: RegisterSensorMessage):
     verticalFarm.on_sensor_register(
         messages.RegisterSensorMessage(sensor.building, sensor.room, sensor.name, sensor.type_id, sensor.instance_id,
                                        sensor.sensor_type))

@@ -20,7 +20,7 @@ class WaterPump(Actuator):
 
         grovepi.digitalWrite(self.relay, 1)
 
-        self.mqtt_client.publish_data(self.get_topic() + "pump-started", "")
+        self.mqtt_client.publish_data(self.get_topic() + "/pump-started", "")
 
 
     def __on_stop_pump(self, message):
@@ -29,11 +29,12 @@ class WaterPump(Actuator):
 
         grovepi.digitalWrite(self.relay, 0)
 
-        self.mqtt_client.publish_data(self.get_topic() + "pump-stopped", "")
+        self.mqtt_client.publish_data(self.get_topic() + "/pump-stopped", "")
 
     def init(self):
-        self.mqtt_client.subscribe_to_topic(self.get_topic() + "start-pump", self.__on_start_pump)
-        self.mqtt_client.subscribe_to_topic(self.get_topic() + "stop-pump", self.__on_stop_pump)
+        self.mqtt_client.subscribe_to_topic(self.get_topic() + "/start-pump", self.__on_start_pump)
+        self.mqtt_client.subscribe_to_topic(self.get_topic() + "/stop-pump", self.__on_stop_pump)
+        self.mqtt_client.publish_data(self.get_topic() + "/pump-stopped", "")
 
     def run(self):
         pass

@@ -3,8 +3,6 @@
     (:requirements
         :strips
         :typing
-        :numeric-fluents
-        :object-fluents
         :equality
         :negative-preconditions
         
@@ -12,7 +10,7 @@
     )
 
     (:types
-        temperature humidity moisture light roof pump display
+        box temperature humidity moisture light roof pump display
 
     )
     
@@ -45,6 +43,8 @@
  
     (is_change_water_text_shown ?d - display)
     (is_change_water_text_not_shown ?d - display)
+
+    (is_done ?b - box)
     
     )
 
@@ -78,7 +78,6 @@
         :effect (and 
                     (is_pump_on ?p)
                     (not (is_pump_off ?p))
-                    (is_soil_dry ?s)
                 )
     )
     
@@ -92,8 +91,6 @@
         :effect (and 
                     (is_pump_off ?p)
                     (not (is_pump_on ?p))
-                    (is_soil_wet ?s)
-                    ((not) is_soil_wet ?s)
                 )
     )
     
@@ -136,6 +133,21 @@
                     (not (is_roof_open ?r))
                 )
     )
+
+    ;close the roof
+    (:action do_nothing
+        :parameters (?b - box ?r - roof ?t - temperature ?h - humidity)
+        :precondition (and
+                        (> (actual_temp ?t) (min_temperature))
+                        (< (actual_temp ?t) (max_temperature))
+
+                        (> (actual_hum ?h) (min_humidity))
+                        (< (actual_hum ?h) (max_humidity))
+                    )
+        :effect (and
+                    (is_done ?b)
+                )
+    )
     
     (:action show_change_water_text 
         :parameters (?d - display)
@@ -155,7 +167,7 @@
         :precondition (and 
                         (is_change_water_text_shown ?d)
                         (< (watering_count) (max_watering_count))
-                        
+
                     )
         :effect (and 
                     (is_change_water_text_not_shown ?d)

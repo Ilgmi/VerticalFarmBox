@@ -53,6 +53,8 @@ class Display(Actuator):
     def init(self):
         self.mqtt_client.subscribe_to_topic(self.get_topic() + "show-text", self.__on_show_text)
         self.mqtt_client.subscribe_to_topic(self.get_topic() + "clear", self.__on_clear)
+        self.__text_command(0x01)  # clear display
+        self.mqtt_client.publish_data(self.get_topic() + "/display-cleared", "")
 
     def run(self):
         pass

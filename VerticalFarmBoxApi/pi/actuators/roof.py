@@ -41,7 +41,7 @@ class Roof(Actuator):
         self.right(256)
         self.cleanup()
 
-        self.mqtt_client.publish_data(self.get_topic() + "roof-closed", "")
+        self.mqtt_client.publish_data(self.get_topic() + "/roof-opened", "")
 
     def __on_init_roof(self, message):
         print(f"close Roof from Topic: '{message.topic}'")
@@ -60,14 +60,15 @@ class Roof(Actuator):
                     self.right(steps)
                 self.cleanup()
 
-            self.mqtt_client.publish_data(self.get_topic() + "roof-closed", "")
+            self.mqtt_client.publish_data(self.get_topic() + "/roof-closed", "")
         except:
             print("Some Error on parsing")
 
     def init(self):
-        self.mqtt_client.subscribe_to_topic(self.get_topic() + "open-roof", self.__on_open_roof)
-        self.mqtt_client.subscribe_to_topic(self.get_topic() + "close-roof", self.__on_close_roof)
-        self.mqtt_client.subscribe_to_topic(self.get_topic() + "init", self.__on_init_roof)
+        self.mqtt_client.subscribe_to_topic(self.get_topic() + "/open-roof", self.__on_open_roof)
+        self.mqtt_client.subscribe_to_topic(self.get_topic() + "/close-roof", self.__on_close_roof)
+        self.mqtt_client.subscribe_to_topic(self.get_topic() + "/init", self.__on_init_roof)
+        self.mqtt_client.publish_data(self.get_topic() + "/roof-closed", "")
 
     def run(self):
         pass

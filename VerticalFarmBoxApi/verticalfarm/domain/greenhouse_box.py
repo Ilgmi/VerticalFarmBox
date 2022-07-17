@@ -1,32 +1,26 @@
 import json
-from enum import Enum
+from datetime import datetime
 from json import JSONEncoder
 
+from bson import ObjectId
+from pydantic.decorator import Mapping
 
-class MoistureLevel(int, Enum):
-    dry = 0
-    wet = 1
-    very_wet = 2
-
-
-class Plant:
-    moisture_level: MoistureLevel = MoistureLevel.dry
-
-    def __init__(self, moisture_level):
-        self.moisture_level = moisture_level
+from verticalfarm.domain.condition import Condition
+from verticalfarm.domain.plant import Plant, MoistureLevel
 
 
-class Condition:
-    min_val: int
-    max_val: int
+class GreenhouseBox:
+    key: str
+    building: str
+    room: str
+    name: str
+    connection_state: bool
+    created: datetime
+    updated: datetime = None
 
-    def __init__(self, min_val, max_val):
-        self.min_val = min_val
-        self.max_val = max_val
-
-
-class Box:
     roof = 0
+    water_pump = 0
+    show_text = 0
     watering_plants = 0
     temperature = 0
     humidity = 0
@@ -36,9 +30,26 @@ class Box:
     temperature_condition: Condition
     humidity_condition: Condition
 
-    def __init__(self, roof, watering_plants, temperature, humidity, light, plant, temperature_condition,
+    @staticmethod
+    def create_box(key, building, room, name):
+        return GreenhouseBox(None, key, building, room, name, True, datetime.now(), None, 0, 0, 0, 0, 0, 0, 0,
+                             Plant(MoistureLevel.dry), Condition(24, 30), Condition(30, 50))
+
+    def __init__(self,_id, key, building, room, name, connection_state, created, updated, roof, water_pump, show_text, watering_plants,
+                 temperature, humidity, light, plant, temperature_condition,
                  humidity_condition):
+        self._id = key
+        self.key = key
+        self.building = building
+        self.room = room
+        self.name = name
+        self.connection_state = connection_state
+        self.created = created
+        self.updated = updated
+
         self.roof = roof
+        self.water_pump = water_pump
+        self.show_text = show_text
         self.watering_plants = watering_plants
         self.temperature = temperature
         self.humidity = humidity
@@ -46,6 +57,11 @@ class Box:
         self.plant = plant
         self.temperature_condition = temperature_condition
         self.humidity_condition = humidity_condition
+
+    @staticmethod
+    def map(data):
+
+        pass
 
 
 class DefaultEncoder(JSONEncoder):
@@ -61,10 +77,12 @@ class DefaultEncoder(JSONEncoder):
 
 class BoxEncoder(JSONEncoder):
     def default(self, object):
-        if isinstance(object, Box):
+        if isinstance(object, GreenhouseBox):
             return object.__dict__
         elif isinstance(object, Plant) or isinstance(object, Condition):
             return DefaultEncoder().default(object)
+        elif isinstance(object, datetime):
+            return (str(object))
         else:
             # call base class implementation which takes care of
             # raising exceptions for unsupported types

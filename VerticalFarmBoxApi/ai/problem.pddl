@@ -9,18 +9,20 @@
     d0 - display 
 )
 
-(:init 
-    (is_pump_off ?p - pump)
-    (is_temp_down ?t - temperature)
-    (is_hum_down ?h - humidity)
-    (is_soil_dry ?s - moisture)
-    (is_light_opt ?l - light)
-    (is_roof_close ?r -roof)
-    (is_change_water_text_not_shown ?d - display)
+(:init
+
+    ($$pump_state$$ p0)
+    ($$roof_state$$ r0)
+
+    ($$soil_state$$ m0)
+    ($$show_text_state$$ d0)
+
+    (is_light_opt l0)
+    (not (output_done b0) )
     
     ;definiton 
     (= (min_temperature) $$min_temperature$$)
-    (= (max_temperature $$max_temperature$$)
+    (= (max_temperature) $$max_temperature$$)
     
     (= (min_humidity) $$min_humidity$$)
     (= (max_humidity) $$max_humidity$$)
@@ -28,14 +30,15 @@
     (= (watering_count) $$watering_count$$)
     (= (max_watering_count) $$max_watering_count$$)
 
-    (= (actual_temp) ?t $$actual_temp$$)
-    (= (actual_hum) ?h $$actual_hum$$)
+    (= (actual_temp t0)  $$actual_temp$$)
+    (= (actual_hum h0)  $$actual_hum$$)
 )
 
-(:goal (and
-        (is_pump_on ?p - pump)
-        (is_roof_open ?r -roof)
-        (is_change_water_text_shown ?d - display)
+(:goal (or
+        ($$pump_state_goal$$ p0)
+        ($$roof_state_goal$$ r0)
+        ($$show_text_state_goal$$ d0)
+        (is_done b0)
         )
 )
 

@@ -1,11 +1,11 @@
-import json
+import json, time
 import threading
 
 from ai.planner import Planner
 from pi.udp_client import UdpClient
-from verticalfarm.box import MoistureLevel
 from verticalfarm.context_component import ContextComponent
 from verticalfarm.db_connector import DBConnector, MongoDBConnector
+from verticalfarm.domain.plant import MoistureLevel
 from verticalfarm.gateway import Gateway
 from verticalfarm.messages import RegisterBoxMessage, RegisterSensorMessage, SensorDataMessage
 from verticalfarm.orchestrator import Orchestrator
@@ -22,11 +22,15 @@ class VerticalFarm:
     def __init__(self):
         self.connectToMQTT()
         self.connectToDB()
-        # self.gateway.on_box_register(self.on_box_register)
-        self.gateway.on_sensor_receive_data(self.on_sensor_receive_data)
-        self.planner = Planner()
+
+        print("Wait for connection ...")
+        time.sleep(5)
+
+        self.gateway.subscribe_to("+/+/+/+/+", self.__save_to_db)
         self.orchestrator = Orchestrator(self.gateway)
-        self.context = ContextComponent(self.gateway)
+        self.planner = Planner()
+        self.context = ContextComponent(self.gateway, self.dbClient, self.planner)
+        self.context.init()
         # test = self.planner.solve()
         x = 1
 
@@ -41,7 +45,7 @@ class VerticalFarm:
         # self.vertical_farmDb = self.dbClient.vertical_farm
 
     def listen_to_box_connections(self):
-        udpClient = UdpClient("192.168.2.110","224.1.1.5", 10000)
+        udpClient = UdpClient("192.168.2.110", "224.1.1.5", 10000)
         t = threading.Thread(name="provide-multicast-request", target=lambda: udpClient.wait_for_backend_requests())
         t.start()
 
@@ -54,18 +58,7 @@ class VerticalFarm:
 
     def get_boxes(self, skip: 0, take: 10):
         result = self.dbClient.get_boxes(skip, take)
-        data = []
-        for box in result.boxes:
-            data.append({
-                "building": box["building"],
-                "room": box["room"],
-                "name": box["name"],
-                "state": json.loads(box["state"]),
-            })
-        return {
-            "count": result.count,
-            "boxes": data
-        }
+        return result
 
     def on_sensor_register(self, message: RegisterSensorMessage):
         print("Vertical Farm Register Sensor")
@@ -86,40 +79,16 @@ class VerticalFarm:
         if self.dbClient.has_box(box_key):
             return self.dbClient.get_box(box_key)
 
+    def __save_to_db(self, mosq, obj, msg):
+        print("Receive data from sensor", msg.topic)
+        keys = msg.topic.split("/")
+        box_key = '/'.join(keys[0:3])
+        if self.dbClient.has_box(box_key):
+            self.dbClient.add_sensor_data(msg.topic, json.loads(msg.payload.decode()))
+
     def on_sensor_receive_data(self, topic, message):
         print(topic)
 
         keys = topic.split("/")
         box_key = '/'.join(keys[0:3])
 
-        if self.dbClient.has_box(box_key):
-            self.dbClient.add_sensor_data(topic, message)
-            box = self.dbClient.get_box(box_key)
-
-            # TODO: use context to create values
-            new_value = ContextComponent.map(keys[3], message["value"]["value"])
-            # TODO: update current box values
-
-            possible_state_change = False
-
-            if keys[3] == "temperature":
-                possible_state_change = abs(box.temperature - new_value > 2)
-                box.temperature = new_value
-            elif keys[3] == "humidity":
-                possible_state_change = abs(box.humidity - new_value) > 10
-                box.humidity = new_value
-            elif keys[3] == "moisture":
-                possible_state_change = new_value == MoistureLevel.dry
-                box.plant.moisture_level = new_value
-            elif keys[3] == "light":
-                possible_state_change = abs(box.light - new_value) > 10
-                box.light = new_value
-            elif keys[3] == "roof":
-                box.roof = new_value
-
-            # TODO: if state change calc solution for problem
-            if possible_state_change:
-                test = 1
-            # TODO: send action to sensors
-            if possible_state_change:
-                test = 2

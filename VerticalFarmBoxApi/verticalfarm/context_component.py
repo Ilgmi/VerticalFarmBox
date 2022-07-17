@@ -1,17 +1,109 @@
-from verticalfarm.box import MoistureLevel
+import json
+
+from ai.planner import Planner
+from verticalfarm.db_connector import DBConnector
+from verticalfarm.domain.plant import MoistureLevel
 from verticalfarm.gateway import Gateway
 
 
 class ContextComponent:
-    plant: str
-
     gateway: Gateway
+    database: DBConnector
+    planner: Planner
 
-    def __init__(self, gateway: Gateway):
+    def __init__(self, gateway: Gateway, database: DBConnector, planner: Planner):
         self.gateway = gateway
-        self.gateway.subscribe_to("/+/+/+/roof/+/roof-opened")
-        self.gateway.subscribe_to("/+/+/+/water-pump/+/start-pump")
+        self.database = database
+        self.planner = planner
 
+    def init(self):
+        print("sub to roof-opened")
+        self.gateway.subscribe_to("+/+/+/roof/+/roof-opened", self.__on_roof_opened)
+        self.gateway.subscribe_to("+/+/+/roof/+/roof-closed", self.__on_roof_closed)
+
+        self.gateway.subscribe_to("+/+/+/display/+/text-is-set", self.__on_text_is_set)
+        self.gateway.subscribe_to("+/+/+/display/+/display-cleared", self.__on_display_is_cleared)
+
+        self.gateway.subscribe_to("+/+/+/water-pump/+/pump-started", self.__on_water_pump_started)
+        self.gateway.subscribe_to("+/+/+/water-pump/+/pump-stopped", self.__on_water_pump_stopped)
+
+        self.gateway.subscribe_to("+/+/+/humidity/+", self.__on_receive_humidity_data)
+        self.gateway.subscribe_to("+/+/+/light/+", self.__on_receive_light_data)
+        self.gateway.subscribe_to("+/+/+/moisture/+", self.__on_receive_moisture_data)
+        self.gateway.subscribe_to("+/+/+/temperature/+", self.__on_receive_temperature_data)
+
+    def state_changed(self, box_key):
+        box = self.database.get_box(box_key)
+        # self.planner.solve(box)
+
+    def get_box_key(self, msg):
+        topic = msg.topic
+        keys = topic.split("/")
+        return "/".join(keys[0:3])
+
+    def __on_roof_opened(self, mosq, obj, msg):
+        print(msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
+
+    def __on_roof_closed(self, mosq, obj, msg):
+        print(msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
+
+    def __on_text_is_set(self, mosq, obj, msg):
+        print(msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
+
+    def __on_display_is_cleared(self, mosq, obj, msg):
+        print(msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
+
+    def __on_water_pump_started(self, mosq, obj, msg):
+        print(msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
+
+    def __on_water_pump_stopped(self, mosq, obj, msg):
+        print(msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
+
+    def __on_receive_humidity_data(self, mosq, obj, msg):
+        print("Context receive humidity data")
+        print(msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
+        box_key = self.get_box_key(msg)
+        if self.database.has_box(box_key):
+            data = json.loads(msg.payload.decode())
+            box = self.database.get_box(box_key)
+            new_value = data["value"]["value"]
+            old_value = box["humidity"]
+            self.database.update_box(box_key, {"humidity": new_value})
+
+    def __on_receive_light_data(self, mosq, obj, msg):
+        print("Context receive light data")
+        print(msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
+        box_key = self.get_box_key(msg)
+        if self.database.has_box(box_key):
+            data = json.loads(msg.payload.decode())
+            box = self.database.get_box(box_key)
+            new_value = data["value"]["value"]
+            old_value = box["light"]
+            self.database.update_box(box_key, {"light": new_value})
+
+    def __on_receive_moisture_data(self, mosq, obj, msg):
+        print("Context receive moisture data")
+        print(msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
+        box_key = self.get_box_key(msg)
+        if self.database.has_box(box_key):
+            data = json.loads(msg.payload.decode())
+            box = self.database.get_box(box_key)
+            new_value = data["value"]["value"]
+            old_value = box["plant"]["moisture_level"]
+            self.database.update_box(box_key, {"plant.moisture_level": new_value})
+
+    def __on_receive_temperature_data(self, mosq, obj, msg):
+        print("Context receive temperature data")
+        print(msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
+        box_key = self.get_box_key(msg)
+        print(box_key)
+        if self.database.has_box(box_key):
+            data = json.loads(msg.payload.decode())
+            box = self.database.get_box(box_key)
+            new_value = data["value"]["value"]
+            old_value = box["temperature"]
+            self.database.update_box(box_key, {"temperature": new_value})
+            self.state_changed(box_key)
 
     @staticmethod
     def map(sensor_type, value):

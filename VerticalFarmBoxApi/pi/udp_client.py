@@ -48,19 +48,22 @@ class UdpClient:
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
         sock.bind(("0.0.0.0", self.port))
 
-        while True:
-            print("waiting to receive message")
-            data, address = sock.recvfrom(1024)
+        try:
+            while True:
+                print("waiting to receive message")
+                data, address = sock.recvfrom(1024)
 
-            print(f'received {len(data)} bytes from {address}')
-            print(data)
+                print(f'received {len(data)} bytes from {address}')
+                print(data)
 
-            send_to_port = int(data.decode())
+                send_to_port = int(data.decode())
 
-            print('sending acknowledgement to', address)
-            print('sending acknowledgement to', address[0])
-            if backend_ip is None:
-                sock.sendto(self.hostip.encode(), (address[0],send_to_port))
-            else:
-                sock.sendto(backend_ip.encode(), (address[0],send_to_port))
+                print('sending acknowledgement to', address)
+                print('sending acknowledgement to', address[0])
+                if backend_ip is None:
+                    sock.sendto(self.hostip.encode(), (address[0],send_to_port))
+                else:
+                    sock.sendto(backend_ip.encode(), (address[0],send_to_port))
+        except:
+            print('some error')
 
