@@ -9,6 +9,8 @@ from verticalfarm.vertical_farm import VerticalFarm
 app = FastAPI()
 
 verticalFarm = VerticalFarm()
+verticalFarm.listen_to_box_connections()
+
 
 
 class RegisterBoxMessage(BaseModel):

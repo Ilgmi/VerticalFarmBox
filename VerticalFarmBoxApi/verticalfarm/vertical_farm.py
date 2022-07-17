@@ -1,11 +1,11 @@
 import json
-
-from pymongo import MongoClient
+import threading
 
 from ai.planner import Planner
+from pi.udp_client import UdpClient
 from verticalfarm.box import MoistureLevel
 from verticalfarm.context_component import ContextComponent
-from verticalfarm.db_connector import DBConnector, InMemoryDBConnector, MongoDBConnector
+from verticalfarm.db_connector import DBConnector, MongoDBConnector
 from verticalfarm.gateway import Gateway
 from verticalfarm.messages import RegisterBoxMessage, RegisterSensorMessage, SensorDataMessage
 from verticalfarm.orchestrator import Orchestrator
@@ -39,6 +39,11 @@ class VerticalFarm:
         # self.dbClient = InMemoryDBConnector()
         # self.dbClient = MongoClient("mongodb://root:example@mongodb:27017/")
         # self.vertical_farmDb = self.dbClient.vertical_farm
+
+    def listen_to_box_connections(self):
+        udpClient = UdpClient("192.168.2.110","224.1.1.5", 10000)
+        t = threading.Thread(name="provide-multicast-request", target=lambda: udpClient.wait_for_backend_requests())
+        t.start()
 
     def on_box_register(self, message: RegisterBoxMessage):
         print("Vertical Farm Register Box")
