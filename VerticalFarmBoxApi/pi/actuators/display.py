@@ -29,16 +29,20 @@ class Display(Actuator):
                 self.bus = smbus.SMBus(0)
 
     def __on_show_text(self, message):
-        print(f"Show Text from Topic: '{message.topic}'")
-        # implement to open the roof
+        try:
+            print(f"Show Text from Topic: '{message.topic}'")
+            # implement to open the roof
 
-        data = json.loads(message.payload.decode())
-        message = data["message"]
-        print(message)
-        if message is not None:
-            self.__set_text(message)
+            data = json.loads(message.payload.decode())
+            message = data["message"]
+            print(message)
+            if message is not None:
+                self.__set_text(message)
 
-        self.mqtt_client.publish_data(self.get_topic() + "/text-is-set", "")
+            self.mqtt_client.publish_data(self.get_topic() + "/text-is-set", "")
+        except:
+            print("Some Error on Parsing")
+
 
     def __on_clear(self, message):
         print(f"clear text")

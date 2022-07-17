@@ -5,6 +5,7 @@ import requests
 
 from actuators.actuator import Actuator
 from actuators.display import Display
+from actuators.roof import Roof
 from actuators.water_pump import WaterPump
 from mqtt_client import MQTTClient
 from sensors.humidity import Humidity
@@ -56,7 +57,8 @@ class GreenhouseBox:
         # self.sensors.append(Light(self.mqttClient, self.building, self.room, self.name, type_id, "1"))
 
         # self.actuators.append(WaterPump(self.mqttClient, self.building, self.room, self.name, type_id))
-        self.actuators.append(Display(self.mqttClient, self.building, self.room, self.name, type_id))
+        # self.actuators.append(Display(self.mqttClient, self.building, self.room, self.name, type_id))
+        self.actuators.append(Roof(self.mqttClient, self.building, self.room, self.name, type_id))
 
         return result.ok
 
