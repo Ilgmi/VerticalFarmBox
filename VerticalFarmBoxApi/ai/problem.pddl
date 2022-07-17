@@ -19,14 +19,17 @@
     (is_change_water_text_not_shown ?d - display)
     
     ;definiton 
-    (= (min_temperature) 20)
-    (= (max_temperature 30)
+    (= (min_temperature) $$min_temperature$$)
+    (= (max_temperature $$max_temperature$$)
     
-    (= (min_humidity) 60)
-    (= (max_humidity) 80)
+    (= (min_humidity) $$min_humidity$$)
+    (= (max_humidity) $$max_humidity$$)
     
-    (= (watering_count) 0) 
-    (= (max_watering_count) 20) 
+    (= (watering_count) $$watering_count$$)
+    (= (max_watering_count) $$max_watering_count$$)
+
+    (= (actual_temp) ?t $$actual_temp$$)
+    (= (actual_hum) ?h $$actual_hum$$)
 )
 
 (:goal (and

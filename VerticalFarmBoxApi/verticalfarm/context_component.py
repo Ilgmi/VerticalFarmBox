@@ -1,8 +1,17 @@
 from verticalfarm.box import MoistureLevel
+from verticalfarm.gateway import Gateway
 
 
 class ContextComponent:
     plant: str
+
+    gateway: Gateway
+
+    def __init__(self, gateway: Gateway):
+        self.gateway = gateway
+        self.gateway.subscribe_to("/+/+/+/roof/+/roof-opened")
+        self.gateway.subscribe_to("/+/+/+/water-pump/+/start-pump")
+
 
     @staticmethod
     def map(sensor_type, value):

@@ -1,7 +1,9 @@
+import json
 from enum import Enum
+from json import JSONEncoder
 
 
-class MoistureLevel(Enum):
+class MoistureLevel(int, Enum):
     dry = 0
     wet = 1
     very_wet = 2
@@ -44,3 +46,26 @@ class Box:
         self.plant = plant
         self.temperature_condition = temperature_condition
         self.humidity_condition = humidity_condition
+
+
+class DefaultEncoder(JSONEncoder):
+
+    def default(self, object):
+        if isinstance(object, Plant) or isinstance(object, Condition) or isinstance(object, MoistureLevel):
+            return object.__dict__
+        else:
+            # call base class implementation which takes care of
+            # raising exceptions for unsupported types
+            return json.JSONEncoder.default(self, object)
+
+
+class BoxEncoder(JSONEncoder):
+    def default(self, object):
+        if isinstance(object, Box):
+            return object.__dict__
+        elif isinstance(object, Plant) or isinstance(object, Condition):
+            return DefaultEncoder().default(object)
+        else:
+            # call base class implementation which takes care of
+            # raising exceptions for unsupported types
+            return json.JSONEncoder.default(self, object)

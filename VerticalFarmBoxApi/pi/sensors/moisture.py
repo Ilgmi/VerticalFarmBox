@@ -2,21 +2,22 @@ import time
 
 import grovepi
 
-from pi.mqtt_client import MQTTClient
-from pi.sensors.sensor import Sensor
+from mqtt_client import MQTTClient
+from sensors.sensor import Sensor
 
 
-class Light(Sensor):
+class Moisture(Sensor):
     mqtt_Client: MQTTClient
 
     def __init__(self, mqtt_client, building, room, name, type_id, instance_id):
         super().__init__(building, room, name, type_id, "moisture", instance_id)
         self.mqtt_Client = mqtt_client
-        self.port = 1
+        self.port = 0
 
     # Collect data from temp
     def collect_data(self):
         moisture = grovepi.analogRead(self.port)
+        print(f"Try to collect moisture {moisture}")
         data = {
             "value": moisture
         }

@@ -1,0 +1,5 @@
+# Python packages required for Sensor Raspberry
+numpy
+paho-mqtt~=1.6.1
+requests~=2.27.1
+grovepi~=1.4.1

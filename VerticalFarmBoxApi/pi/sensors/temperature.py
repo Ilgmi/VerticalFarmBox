@@ -3,8 +3,8 @@ import time
 
 import grovepi
 
-from pi.mqtt_client import MQTTClient
-from pi.sensors.sensor import Sensor
+from mqtt_client import MQTTClient
+from sensors.sensor import Sensor
 
 
 class Temperature(Sensor):
@@ -20,7 +20,8 @@ class Temperature(Sensor):
     # Collect data from temp
     def collect_data(self):
         [temp, humidity] = grovepi.dht(self.sensor, self.blue)
-        if not math.isnan(temp):
+        print(f"Try to collect temp {temp}")
+        if not math.isnan(temp) and temp > 0:
             data = {
                 "unit": "celsius",
                 "value": temp

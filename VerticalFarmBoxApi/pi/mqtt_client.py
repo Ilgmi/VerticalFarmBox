@@ -8,14 +8,14 @@ class MQTTClient:
 
     on_sensor_receive_data_call_back = {}
 
-    def __init__(self, name: str):
-        self.mqtt_client = mqtt.Client("VerticalFarmBackend")
+    def __init__(self, name: str, ip):
+        self.mqtt_client = mqtt.Client(name)
 
         self.mqtt_client.on_connect = self.__on_connect
         self.mqtt_client.on_message = self.__on_message
 
         self.mqtt_client.username_pw_set("admin", "password")
-        self.mqtt_client.connect("mosquitto", 1883, 70)
+        self.mqtt_client.connect(ip, 1883, 70)
 
     def connectToMQTT(self):
 
@@ -41,13 +41,16 @@ class MQTTClient:
                 func(message)
 
     def subscribe_to_topic(self, name, func):
-        funcs = self.on_sensor_receive_data_call_back.get(name)
-        if funcs is None:
-            self.on_sensor_receive_data_call_back.setdefault(name, [func])
-        else:
-            funcs.append(func)
-            self.on_sensor_receive_data_call_back.setdefault(name, funcs)
+        if self.mqtt_client.is_connected():
+            print(f"Subscribe to: {name}")
+            funcs = self.on_sensor_receive_data_call_back.get(name)
+            if funcs is None:
+                self.on_sensor_receive_data_call_back.setdefault(name, [func])
+            else:
+                funcs.append(func)
+                self.on_sensor_receive_data_call_back.setdefault(name, funcs)
+            self.mqtt_client.subscribe(name, 0)
 
     def publish_data(self, topic, data):
-
+        print(f"Publish data for Topic: '{topic}' data: {data}")
         self.mqtt_client.publish(topic, json.dumps(data), qos=0, retain=False)

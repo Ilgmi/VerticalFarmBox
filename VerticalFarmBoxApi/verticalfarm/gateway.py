@@ -71,3 +71,7 @@ class Gateway:
 
     def send_action(self, topic, action):
         self.mqtt_client.publish(topic, json.dumps(action))
+
+    def subscribe_to(self, topic):
+        self.mqtt_client.subscribe(topic, 2)
+

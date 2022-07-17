@@ -8,7 +8,6 @@ fastapi = "*"
 requests = "*"
 paho-mqtt = "*"
 pymongo = "*"
-grovepi = "*"
 
 [dev-packages]
 

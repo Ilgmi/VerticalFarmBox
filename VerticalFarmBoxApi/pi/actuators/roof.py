@@ -1,5 +1,5 @@
-from pi.actuators.actuator import Actuator
-from pi.mqtt_client import MQTTClient
+from actuators.actuator import Actuator
+from mqtt_client import MQTTClient
 
 
 class RoofActuators(Actuator):
@@ -10,15 +10,18 @@ class RoofActuators(Actuator):
         self.mqtt_client = mqtt_client
 
     def __on_open_roof(self, message):
-        print(message.topic)
+        print(f"Open Roof from Topic: '{message.topic}'")
         # implement to open the roof
         self.mqtt_client.publish_data(self.get_topic() + "/roof-opened", "")
 
     def __on_close_roof(self, message):
-        print(message.topic)
+        print(f"close Roof from Topic: '{message.topic}'")
         # implement to close the roof
-        self.mqtt_client.publish_data(self.get_topic() + "/roof-opened", "")
+        self.mqtt_client.publish_data(self.get_topic() + "/roof-closed", "")
+
+    def init(self):
+        self.mqtt_client.subscribe_to_topic(self.get_topic() + "open-roof", self.__on_open_roof)
+        self.mqtt_client.subscribe_to_topic(self.get_topic() + "close-roof", self.__on_close_roof)
 
     def run(self):
-        self.mqtt_client.subscribe_to_topic(self.get_topic() + "/open-roof", self.__on_open_roof)
-        self.mqtt_client.subscribe_to_topic(self.get_topic() + "/close-roof", self.__on_close_roof)
+        pass

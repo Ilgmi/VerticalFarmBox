@@ -5,7 +5,7 @@ from pymongo import MongoClient
 from ai.planner import Planner
 from verticalfarm.box import MoistureLevel
 from verticalfarm.context_component import ContextComponent
-from verticalfarm.db_connector import DBConnector
+from verticalfarm.db_connector import DBConnector, InMemoryDBConnector, MongoDBConnector
 from verticalfarm.gateway import Gateway
 from verticalfarm.messages import RegisterBoxMessage, RegisterSensorMessage, SensorDataMessage
 from verticalfarm.orchestrator import Orchestrator
@@ -17,6 +17,7 @@ class VerticalFarm:
     vertical_farmDb: any
     planner: Planner
     orchestrator: Orchestrator
+    context: ContextComponent
 
     def __init__(self):
         self.connectToMQTT()
@@ -25,8 +26,8 @@ class VerticalFarm:
         self.gateway.on_sensor_receive_data(self.on_sensor_receive_data)
         self.planner = Planner()
         self.orchestrator = Orchestrator(self.gateway)
-
-        test = self.planner.solve()
+        self.context = ContextComponent(self.gateway)
+        # test = self.planner.solve()
         x = 1
 
     def connectToMQTT(self):
@@ -34,27 +35,30 @@ class VerticalFarm:
         self.gateway.connectToMQTT()
 
     def connectToDB(self):
-        self.dbClient = DBConnector()
+        self.dbClient = MongoDBConnector()
+        # self.dbClient = InMemoryDBConnector()
         # self.dbClient = MongoClient("mongodb://root:example@mongodb:27017/")
         # self.vertical_farmDb = self.dbClient.vertical_farm
 
     def on_box_register(self, message: RegisterBoxMessage):
         print("Vertical Farm Register Box")
         print("TODO: Handle Register of Box. Is there already a box ?")
-        print(message)
-        self.dbClient.add_box(message)
+        if not self.dbClient.has_box(message.get_key()):
+            self.dbClient.add_box(message)
+        return True
 
-    def get_boxes(self):
-        boxes = list(self.dbClient.boxes.values())
+    def get_boxes(self, skip: 0, take: 10):
+        result = self.dbClient.get_boxes(skip, take)
         data = []
-        for box in boxes:
+        for box in result.boxes:
             data.append({
                 "building": box["building"],
                 "room": box["room"],
-                "box": box["box"],
-                "state": box["state"],
+                "name": box["name"],
+                "state": json.loads(box["state"]),
             })
         return {
+            "count": result.count,
             "boxes": data
         }
 
@@ -70,7 +74,8 @@ class VerticalFarm:
         print(message)
 
     def get_sensors(self, box_name):
-        box = self.dbClient.boxes.get()
+        # box = self.dbClient.get_sensors()
+        return []
 
     def get_box(self, box_key):
         if self.dbClient.has_box(box_key):
@@ -83,7 +88,7 @@ class VerticalFarm:
         box_key = '/'.join(keys[0:3])
 
         if self.dbClient.has_box(box_key):
-            self.dbClient.add_sensor_data(message)
+            self.dbClient.add_sensor_data(topic, message)
             box = self.dbClient.get_box(box_key)
 
             # TODO: use context to create values
