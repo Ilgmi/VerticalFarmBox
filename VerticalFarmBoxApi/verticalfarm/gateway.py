@@ -1,10 +1,6 @@
 import json
-import re
-from datetime import datetime
 
 import paho.mqtt.client as mqtt
-
-from verticalfarm.messages import SensorDataMessage, RegisterBoxMessage, RegisterSensorMessage
 
 
 class Gateway:
@@ -41,7 +37,6 @@ class Gateway:
 
         self.__on_sensor_receive_data(message)
 
-
     def __on_sensor_receive_data(self, message):
         data = json.loads(message.payload.decode())
         for func in self.on_sensor_receive_data_call_back:
@@ -57,4 +52,3 @@ class Gateway:
         print("Subscribe to", topic)
         self.mqtt_client.subscribe(topic, 2)
         self.mqtt_client.message_callback_add(topic, fuc)
-

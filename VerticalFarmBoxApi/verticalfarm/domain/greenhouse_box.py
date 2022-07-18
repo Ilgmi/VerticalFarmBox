@@ -2,9 +2,6 @@ import json
 from datetime import datetime
 from json import JSONEncoder
 
-from bson import ObjectId
-from pydantic.decorator import Mapping
-
 from verticalfarm.domain.condition import Condition
 from verticalfarm.domain.plant import Plant, MoistureLevel
 
@@ -32,10 +29,12 @@ class GreenhouseBox:
 
     @staticmethod
     def create_box(key, building, room, name):
-        return GreenhouseBox(None, key, building, room, name, True, datetime.now().strftime("%d-%m-%YT%H:%M:%S"), None, 0, 0, 0, 0, 0, 0, 0,
+        return GreenhouseBox(None, key, building, room, name, True, datetime.now().strftime("%d-%m-%YT%H:%M:%S"), None,
+                             0, 0, 0, 0, 0, 0, 0,
                              Plant(MoistureLevel.dry), Condition(24, 30), Condition(30, 50))
 
-    def __init__(self,_id, key, building, room, name, connection_state, created, updated, roof, water_pump, show_text, watering_plants,
+    def __init__(self, _id, key, building, room, name, connection_state, created, updated, roof, water_pump, show_text,
+                 watering_plants,
                  temperature, humidity, light, plant, temperature_condition,
                  humidity_condition):
         self._id = key
@@ -60,7 +59,6 @@ class GreenhouseBox:
 
     @staticmethod
     def map(data):
-
         pass
 
 

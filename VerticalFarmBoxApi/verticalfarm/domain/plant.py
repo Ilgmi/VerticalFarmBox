@@ -6,6 +6,7 @@ class MoistureLevel(int, Enum):
     wet = 1
     very_wet = 2
 
+
 class Plant:
     moisture_level: MoistureLevel = MoistureLevel.dry
 

@@ -1,11 +1,11 @@
-import json, time
+import json
 import threading
+import time
 
 from ai.planner import Planner
 from pi.udp_client import UdpClient
 from verticalfarm.context_component import ContextComponent
 from verticalfarm.db_connector import DBConnector, MongoDBConnector
-from verticalfarm.domain.plant import MoistureLevel
 from verticalfarm.gateway import Gateway
 from verticalfarm.messages import RegisterBoxMessage, RegisterSensorMessage, SensorDataMessage
 from verticalfarm.orchestrator import Orchestrator
@@ -22,9 +22,6 @@ class VerticalFarm:
     def __init__(self):
         self.connectToMQTT()
         self.connectToDB()
-
-        print("Wait for connection ...")
-        time.sleep(5)
 
         self.gateway.subscribe_to("+/+/+/+/+", self.__save_to_db)
         self.orchestrator = Orchestrator(self.gateway)
@@ -95,3 +92,21 @@ class VerticalFarm:
     def get_box_sensors_data(self, box_key):
         return self.dbClient.get_sensors_data(box_key)
 
+    def toggle_roof(self, box_id):
+        if not self.dbClient.has_box(box_id):
+            return False
+        box = self.dbClient.get_box(box_id)
+        if box["roof"] == 0:
+            self.orchestrator.send(box_id, 'roof', "open-roof")
+        elif box["roof"] == 1:
+            self.orchestrator.send(box_id, 'roof', "close-roof")
+
+    def water_plant(self, box_id):
+        if not self.dbClient.has_box(box_id):
+            return False
+        box = self.dbClient.get_box(box_id)
+        if box["water_pump"] == 0:
+            self.orchestrator.send(box_id, 'water-pump', "start-pump")
+
+    def move_roof(self, box_id, move_roof):
+        self.orchestrator.send(box_id, 'roof', "init", move_roof)

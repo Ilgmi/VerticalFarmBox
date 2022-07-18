@@ -38,14 +38,15 @@ class Orchestrator:
         self.gateway = gateway
 
     def handle_new_plan(self, box_key, plan):
+        pass
         actions = self.actor_actions.keys()
         for act in plan:
             for action in actions:
                 if act.find(action.lower()) != -1:
                     print(self.actor_actions[action])
-                    # self.send(box_key, self.actor_actions[action]["type"], self.actor_actions[action]["type"])
+                    self.send(box_key, self.actor_actions[action]["type"], self.actor_actions[action]["type"])
 
-
-
-    def send(self, box_key, actuator, action):
-        self.gateway.send_action(box_key + "/" + actuator + "/" + action, {})
+    def send(self, box_key, actuator, action, data=None):
+        if data is None:
+            data = {}
+        self.gateway.send_action(box_key + "/" + actuator + "/" + action, data)

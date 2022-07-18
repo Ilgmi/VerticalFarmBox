@@ -1,4 +1,4 @@
-import json, time
+import json, time, traceback
 from threading import Thread
 
 import requests
@@ -65,11 +65,11 @@ class GreenhouseBox:
 
         type_id = "de.uni-stuttgart.iaas.sc"
 
-        self.sensors.append(Temperature(self.mqttClient, self.building, self.room, self.name, type_id, "1"))
-        self.sensors.append(Humidity(self.mqttClient, self.building, self.room, self.name, type_id, "1"))
+        # self.sensors.append(Temperature(self.mqttClient, self.building, self.room, self.name, type_id, "1"))
+        # self.sensors.append(Humidity(self.mqttClient, self.building, self.room, self.name, type_id, "1"))
         self.sensors.append(Moisture(self.mqttClient, self.building, self.room, self.name, type_id, "1"))
-        self.sensors.append(Light(self.mqttClient, self.building, self.room, self.name, type_id, "1"))
-
+        # self.sensors.append(Light(self.mqttClient, self.building, self.room, self.name, type_id, "1"))
+        #
         # self.actuators.append(WaterPump(self.mqttClient, self.building, self.room, self.name, type_id))
         # self.actuators.append(Display(self.mqttClient, self.building, self.room, self.name, type_id))
         # self.actuators.append(Roof(self.mqttClient, self.building, self.room, self.name, type_id))
@@ -78,15 +78,22 @@ class GreenhouseBox:
         return result.ok
 
     def run(self):
-        self.threads = [Thread(target=self.__sensor_collect_data, args=[sensor]) for sensor in self.sensors]
-        self.threads.extend([Thread(target=self.__actuators_run, args=[actuator]) for actuator in self.actuators])
+        # self.threads = [Thread(target=self.__sensor_collect_data, args=[sensor]) for sensor in self.sensors]
+        # self.threads.extend([Thread(target=self.__actuators_run, args=[actuator]) for actuator in self.actuators])
+        #
+        #
+        #
+        # for thread in self.threads:
+        #     thread.start()
 
+        print("Threads started")
 
+        while True:
+            print('sldkjfölkdsajflösakdjf')
+            for sensor in self.sensors:
+                sensor.collect_data()
+            time.sleep(5)
 
-        for thread in self.threads:
-            thread.start()
-
-        [thread.join() for thread in self.threads]
 
     def __sensor_collect_data(self, sensor: Sensor):
         try:
@@ -94,6 +101,7 @@ class GreenhouseBox:
                 sensor.collect_data()
         except:
             print("some error")
+            traceback.print_exc()
         finally:
             return True
 
@@ -105,6 +113,7 @@ class GreenhouseBox:
 
         except:
             print("some error")
+            traceback.print_exc()
         finally:
             return True
 

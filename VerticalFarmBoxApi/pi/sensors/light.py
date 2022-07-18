@@ -23,4 +23,4 @@ class Light(Sensor):
         }
         self.mqtt_Client.publish_data(self.get_topic(), self.get_message(data))
 
-        time.sleep(5)
+

@@ -71,7 +71,7 @@ class ContextComponent:
         if self.database.has_box(box_key):
             box = self.database.get_box(box_key)
             watering_plant = int(box["watering_plant"])
-            self.database.update_box(box_key, {"water_pump": 1, "watering_plant": watering_plant+1})
+            self.database.update_box(box_key, {"water_pump": 1, "watering_plant": watering_plant + 1})
 
     def __on_water_pump_stopped(self, mosq, obj, msg):
         print(msg.topic + " " + str(msg.qos) + " " + str(msg.payload))

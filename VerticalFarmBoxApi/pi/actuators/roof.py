@@ -59,8 +59,6 @@ class Roof(Actuator):
                 else:
                     self.right(steps)
                 self.cleanup()
-
-            self.mqtt_client.publish_data(self.get_topic() + "/roof-closed", "")
         except:
             print("Some Error on parsing")
 

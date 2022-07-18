@@ -44,6 +44,10 @@ class RegisterSensorMessage(BaseModel):
     instance_id: str
     sensor_type: str
 
+class MoveRoof(BaseModel):
+    directoin: bool
+    steps: int
+
 
 @app.get("/")
 async def root():
@@ -76,9 +80,17 @@ async def add_box(box: RegisterBoxMessage):
 async def get_sensors_data(building, room, box):
     return verticalFarm.get_box_sensors_data(building + "/" + room + "/" + box)
 
-# @app.get("/api/buildings/{building}/rooms/{room}/boxes/{box}/sensors-data")
-# async def get_sensors_data(building, room, box):
-#     return verticalFarm.get_box_sensors_data(building + "/" + room + "/" + box)
+@app.post("/api/buildings/{building}/rooms/{room}/boxes/{box}/toggle-roof")
+async def get_sensors_data(building, room, box):
+    return verticalFarm.toggle_roof(building + "/" + room + "/" + box)
+
+@app.post("/api/buildings/{building}/rooms/{room}/boxes/{box}/water-plant")
+async def get_sensors_data(building, room, box):
+    return verticalFarm.water_plant(building + "/" + room + "/" + box)
+
+@app.post("/api/buildings/{building}/rooms/{room}/boxes/{box}/move-roof")
+async def get_sensors_data(building, room, box, move_roof: MoveRoof):
+    return verticalFarm.move_roof(building + "/" + room + "/" + box, move_roof)
 
 
 @app.get("/api/boxes/{box_name}/sensors")

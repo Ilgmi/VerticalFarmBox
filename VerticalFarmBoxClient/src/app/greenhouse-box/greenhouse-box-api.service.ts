@@ -42,8 +42,11 @@ export class GreenhouseBoxApiService {
     })
   }
 
-  public rotateRoof(box: GreenhouseBox, steps: number) {
-
+  public rotateRoof(box: GreenhouseBox, directoin: boolean, steps: number) {
+    return this.httpClient.post(`api/buildings/${box.building}/rooms/${box.room}/boxes/${box.name}/move-roof`, {
+      direction: directoin,
+      steps: steps
+    });
   }
 
   updateConditions(box: GreenhouseBox, conditions: any): Observable<any> {

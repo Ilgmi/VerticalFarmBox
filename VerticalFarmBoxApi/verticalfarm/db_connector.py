@@ -5,12 +5,13 @@ from abc import abstractmethod
 from dataclasses import dataclass
 from typing import List
 
+from dateutil.parser import parse
 from pymongo import MongoClient
 from pymongo.collection import Collection
 
 from verticalfarm.domain.greenhouse_box import GreenhouseBox, BoxEncoder
 from verticalfarm.messages import SensorDataMessage, RegisterBoxMessage
-from dateutil.parser import parse
+
 
 @dataclass
 class BoxesResult:
@@ -90,20 +91,21 @@ class MongoDBConnector(DBConnector):
         result = self.box.update_one({'_id': key}, new_values)
 
     def add_sensor_data(self, key, message):
-        self.sensor_data.insert_one({
-            "key": key,
-            "type_id": message["type_id"],
-            "sensor_type": message["sensor_type"],
-            "instance_id": message["instance_id"],
-            "timestamp": message["timestamp"],
-            "value": message["value"]
-        })
+        try:
+            self.sensor_data.insert_one({
+                "key": key,
+                "type_id": message["type_id"],
+                "sensor_type": message["sensor_type"],
+                "instance_id": message["instance_id"],
+                "timestamp": message["timestamp"],
+                "value": message["value"]
+            })
+        except:
+            print("parse error")
 
     def get_sensors_data(self, box_key: str):
 
-
-
-        values = self.sensor_data.find({"key": { "$regex": f'{re.escape(box_key)}.*' }},
+        values = self.sensor_data.find({"key": {"$regex": f'{re.escape(box_key)}.*'}},
                                        {"instance_id": 1, "sensor_type": 1, "timestamp": 1, "value": 1}).sort(
             "sensor_type")
 
