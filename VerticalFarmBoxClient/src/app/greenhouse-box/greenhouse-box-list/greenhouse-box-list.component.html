@@ -1,0 +1,47 @@
+<div class="p-1">
+    <ng-container >
+        <mat-card *ngFor="let box of greenhouseBoxes$ | async; index as i" class="box-card">
+            <mat-card-title>
+                {{box.name}}
+            </mat-card-title>
+            <mat-card-content>
+                <div class="d-flex flex-column">
+                    <div class="row">
+                        <div class="col">Roof</div>
+                        <div class="col">
+                            <ng-container *ngIf="box.roof === 0">Close</ng-container>
+                            <ng-container *ngIf="box.roof === 1">Open</ng-container>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">Temperature</div>
+                        <div class="col">{{box.temperature}} °C</div>
+                    </div>
+                    <div class="row">
+                        <div class="col">Humidity</div>
+                        <div class="col">{{box.humidity}} %</div>
+                    </div>
+                    <div class="row">
+                        <div class="col">Light</div>
+                        <div class="col">{{box.light}}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col">Soil</div>
+                        <div class="col">
+                            <ng-container [ngSwitch]="box.plant.moisture_level">
+                                <ng-container *ngSwitchCase="0">Dry</ng-container>
+                                <ng-container *ngSwitchCase="1">Wet</ng-container>
+                                <ng-container *ngSwitchCase="2">Very Wet</ng-container>
+                            </ng-container>
+                        </div>
+                    </div>
+                </div>
+            </mat-card-content>
+            <mat-card-footer>
+                <div class="d-flex justify-content-center p-2">
+                    <button mat-flat-button color="primary" [routerLink]="['box/', box.name]">Details</button>
+                </div>
+            </mat-card-footer>
+        </mat-card>
+    </ng-container>
+</div>

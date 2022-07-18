@@ -1,0 +1,121 @@
+<ng-container *ngIf="isLoading$ | async">
+    Loading...
+</ng-container>
+<ng-container *ngIf="!(isLoading$|async) && box">
+    <mat-card>
+        <mat-card-title>{{box.name}}</mat-card-title>
+        <mat-card-content>
+            <div class="p-2">
+                <mat-divider></mat-divider>
+                <div class="d-flex flex-column p-2">
+                    <div class="row">
+                        <div class="col">Roof</div>
+                        <div class="col">
+                            <ng-container *ngIf="box.roof === 0">Closed</ng-container>
+                            <ng-container *ngIf="box.roof === 1">Open</ng-container>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">Water Pump</div>
+                        <div class="col">
+                            <ng-container *ngIf="box.water_pump === 0">Off</ng-container>
+                            <ng-container *ngIf="box.water_pump === 1">On</ng-container>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">Temperature</div>
+                        <div class="col">{{box.temperature}} °C</div>
+                    </div>
+                    <div class="row">
+                        <div class="col">Humidity</div>
+                        <div class="col">{{box.humidity}} %</div>
+                    </div>
+                    <div class="row">
+                        <div class="col">Light</div>
+                        <div class="col">{{box.light}}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col">Soil</div>
+                        <div class="col">
+                            <ng-container [ngSwitch]="box.plant.moisture_level">
+                                <ng-container *ngSwitchCase="0">Dry</ng-container>
+                                <ng-container *ngSwitchCase="1">Wet</ng-container>
+                                <ng-container *ngSwitchCase="2">Very Wet</ng-container>
+                            </ng-container>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">Watered:</div>
+                        <div class="col">{{box.watering_plants}}</div>
+                    </div>
+                </div>
+                <mat-divider></mat-divider>
+                <div class="d-flex flex-column p-2" >
+                    <form [formGroup]="conditionForm">
+                        <div class="row p-2" formGroupName="temperature_condition">
+                            <div class="col">Temperature Condition</div>
+                            <div class="col">
+                                <mat-form-field>
+                                    <mat-label>Min</mat-label>
+                                    <input matInput placeholder="0" formControlName="min_val">
+                                </mat-form-field>
+                            </div>
+                            <div class="col">
+                                <mat-form-field>
+                                    <mat-label>Max</mat-label>
+                                    <input matInput placeholder="60" formControlName="max_val">
+                                </mat-form-field>
+                            </div>
+                        </div>
+                        <div class="row p-2" formGroupName="humidity_condition">
+                            <div class="col">Humidity Condition</div>
+                            <div class="col">
+                                <mat-form-field>
+                                    <mat-label>Min</mat-label>
+                                    <input matInput placeholder="0" formControlName="min_val">
+                                </mat-form-field>
+                            </div>
+                            <div class="col">
+                                <mat-form-field>
+                                    <mat-label>Max</mat-label>
+                                    <input matInput placeholder="100" formControlName="max_val">
+                                </mat-form-field>
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+
+
+        </mat-card-content>
+        <mat-card-actions>
+            <div class="d-flex">
+                <div class="p-2">
+                    <button class="ml-2" mat-flat-button color="primary" (click)="toggleRoof()">Toggle Roof</button>
+                </div>
+                <div class="p-2">
+                    <button class="ml-2" mat-flat-button color="primary" (click)="waterPlant()">Water Plant</button>
+                </div>
+                <div class="p-2">
+                    <button mat-flat-button color="primary" [disabled]="!conditionForm.dirty || conditionForm.invalid" (click)="updateConditions()">Save
+                    </button>
+                </div>
+
+
+            </div>
+        </mat-card-actions>
+    </mat-card>
+    <mat-divider></mat-divider>
+    <mat-card>
+        <mat-card-title>Data</mat-card-title>
+        <mat-card-content>
+            <app-sensor-data></app-sensor-data>
+        </mat-card-content>
+    </mat-card>
+
+</ng-container>
+
+<ng-container *ngIf="!(isLoading$|async) && !box">
+    Not Found
+</ng-container>

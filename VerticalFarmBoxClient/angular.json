@@ -73,7 +73,7 @@
               "browserTarget": "VerticalFarmBoxClient:build:production"
             },
             "development": {
-              "browserTarget": "VerticalFarmBoxClient:build:development"
+              "browserTarget": "VerticalFarmBoxClient:build:development",
             }
           },
           "defaultConfiguration": "development"

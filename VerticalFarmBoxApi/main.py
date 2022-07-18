@@ -1,17 +1,34 @@
+from datetime import datetime
 from typing import List
 
 from fastapi import FastAPI
 from pydantic import BaseModel
+from starlette.middleware.cors import CORSMiddleware
 
 import verticalfarm.messages as messages
 from verticalfarm.vertical_farm import VerticalFarm
 
+
+origins = [
+    "http://localhost",
+    "http://localhost:4200",
+]
+
+
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 verticalFarm = VerticalFarm()
 verticalFarm.listen_to_box_connections()
 
-
+print(datetime.now().strftime("%d-%m-%YT%H:%M:%S"))
 
 class RegisterBoxMessage(BaseModel):
     building: str
@@ -54,6 +71,14 @@ async def add_box(box: RegisterBoxMessage):
     verticalFarm.on_box_register(messages.RegisterBoxMessage(box.building, box.room, box.name))
 
     return box
+
+@app.get("/api/buildings/{building}/rooms/{room}/boxes/{box}/sensors-data")
+async def get_sensors_data(building, room, box):
+    return verticalFarm.get_box_sensors_data(building + "/" + room + "/" + box)
+
+# @app.get("/api/buildings/{building}/rooms/{room}/boxes/{box}/sensors-data")
+# async def get_sensors_data(building, room, box):
+#     return verticalFarm.get_box_sensors_data(building + "/" + room + "/" + box)
 
 
 @app.get("/api/boxes/{box_name}/sensors")

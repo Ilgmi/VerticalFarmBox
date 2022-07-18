@@ -92,3 +92,6 @@ class VerticalFarm:
         keys = topic.split("/")
         box_key = '/'.join(keys[0:3])
 
+    def get_box_sensors_data(self, box_key):
+        return self.dbClient.get_sensors_data(box_key)
+

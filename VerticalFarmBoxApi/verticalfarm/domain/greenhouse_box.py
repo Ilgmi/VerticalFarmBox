@@ -15,8 +15,8 @@ class GreenhouseBox:
     room: str
     name: str
     connection_state: bool
-    created: datetime
-    updated: datetime = None
+    created: str
+    updated: str | None
 
     roof = 0
     water_pump = 0
@@ -32,7 +32,7 @@ class GreenhouseBox:
 
     @staticmethod
     def create_box(key, building, room, name):
-        return GreenhouseBox(None, key, building, room, name, True, datetime.now(), None, 0, 0, 0, 0, 0, 0, 0,
+        return GreenhouseBox(None, key, building, room, name, True, datetime.now().strftime("%d-%m-%YT%H:%M:%S"), None, 0, 0, 0, 0, 0, 0, 0,
                              Plant(MoistureLevel.dry), Condition(24, 30), Condition(30, 50))
 
     def __init__(self,_id, key, building, room, name, connection_state, created, updated, roof, water_pump, show_text, watering_plants,
