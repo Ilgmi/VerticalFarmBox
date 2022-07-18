@@ -1,3 +1,4 @@
+import datetime
 import json
 from abc import abstractmethod
 from dataclasses import dataclass
@@ -82,6 +83,7 @@ class MongoDBConnector(DBConnector):
         return result
 
     def update_box(self, key, to_update):
+        to_update["updated"] = datetime.datetime.now()
         new_values = {"$set": to_update}
         result = self.box.update_one({'_id': key}, new_values)
 

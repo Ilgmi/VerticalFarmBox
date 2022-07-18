@@ -4,7 +4,7 @@ from verticalfarm.gateway import Gateway
 class Orchestrator:
     gateway: Gateway
 
-    actor_commands = {
+    actor_actions = {
         'pump_on': {
             'type': 'water-pump',
             'action': 'start-pump'
@@ -23,12 +23,13 @@ class Orchestrator:
         },
 
         'show_change_water_text': {
-            'type': 'water-pump',
-            'action': 'stop-pump'
+            'type': 'display',
+            'action': 'show-text',
+            'data': 'Please change the water'
         },
         'do_not_show_change_water_text': {
-            'type': 'water-pump',
-            'action': 'stop-pump'
+            'type': 'display',
+            'action': 'clear',
         },
 
     }
@@ -36,5 +37,15 @@ class Orchestrator:
     def __init__(self, gateway: Gateway):
         self.gateway = gateway
 
-    def send(self, box_key, sensor, instance, action):
-        self.gateway.send_action(box_key + "/" + sensor + "/" + instance + "/action", action)
+    def handle_new_plan(self, box_key, plan):
+        actions = self.actor_actions.keys()
+        for act in plan:
+            for action in actions:
+                if act.find(action.lower()) != -1:
+                    print(self.actor_actions[action])
+                    # self.send(box_key, self.actor_actions[action]["type"], self.actor_actions[action]["type"])
+
+
+
+    def send(self, box_key, actuator, action):
+        self.gateway.send_action(box_key + "/" + actuator + "/" + action, {})

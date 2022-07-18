@@ -16,7 +16,7 @@ class Roof(Actuator):
     step_sleep = 0.002
 
     def __init__(self, mqtt_client, building, room, name, type_id):
-        super().__init__(building, room, name, type_id, "roof", "1")
+        super().__init__(building, room, name, type_id, "roof")
         self.mqtt_client = mqtt_client
 
     def __on_open_roof(self, message):

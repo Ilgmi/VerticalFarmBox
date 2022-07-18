@@ -9,7 +9,7 @@ class WaterPump(Actuator):
     relay = 3
 
     def __init__(self, mqtt_client, building, room, name, type_id):
-        super().__init__(building, room, name, type_id, "water-pump", "1")
+        super().__init__(building, room, name, type_id, "water-pump")
         self.mqtt_client = mqtt_client
         grovepi.pinMode(self.relay, "OUTPUT")
         grovepi.digitalWrite(self.relay, 0)

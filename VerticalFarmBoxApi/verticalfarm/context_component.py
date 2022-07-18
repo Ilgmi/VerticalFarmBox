@@ -34,7 +34,7 @@ class ContextComponent:
 
     def state_changed(self, box_key):
         box = self.database.get_box(box_key)
-        # self.planner.solve(box)
+        self.planner.solve(box_key, box)
 
     def get_box_key(self, msg):
         topic = msg.topic
@@ -43,21 +43,41 @@ class ContextComponent:
 
     def __on_roof_opened(self, mosq, obj, msg):
         print(msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
+        box_key = self.get_box_key(msg)
+        if self.database.has_box(box_key):
+            self.database.update_box(box_key, {"roof": 1})
 
     def __on_roof_closed(self, mosq, obj, msg):
         print(msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
+        box_key = self.get_box_key(msg)
+        if self.database.has_box(box_key):
+            self.database.update_box(box_key, {"roof": 0})
 
     def __on_text_is_set(self, mosq, obj, msg):
         print(msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
+        box_key = self.get_box_key(msg)
+        if self.database.has_box(box_key):
+            self.database.update_box(box_key, {"show_text": 1})
 
     def __on_display_is_cleared(self, mosq, obj, msg):
         print(msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
+        box_key = self.get_box_key(msg)
+        if self.database.has_box(box_key):
+            self.database.update_box(box_key, {"show_text": 0})
 
     def __on_water_pump_started(self, mosq, obj, msg):
         print(msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
+        box_key = self.get_box_key(msg)
+        if self.database.has_box(box_key):
+            box = self.database.get_box(box_key)
+            watering_plant = int(box["watering_plant"])
+            self.database.update_box(box_key, {"water_pump": 1, "watering_plant": watering_plant+1})
 
     def __on_water_pump_stopped(self, mosq, obj, msg):
         print(msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
+        box_key = self.get_box_key(msg)
+        if self.database.has_box(box_key):
+            self.database.update_box(box_key, {"water_pump": 0})
 
     def __on_receive_humidity_data(self, mosq, obj, msg):
         print("Context receive humidity data")
@@ -69,6 +89,8 @@ class ContextComponent:
             new_value = data["value"]["value"]
             old_value = box["humidity"]
             self.database.update_box(box_key, {"humidity": new_value})
+            if abs(new_value - old_value) > 5:
+                self.state_changed(box_key)
 
     def __on_receive_light_data(self, mosq, obj, msg):
         print("Context receive light data")
@@ -89,8 +111,11 @@ class ContextComponent:
             data = json.loads(msg.payload.decode())
             box = self.database.get_box(box_key)
             new_value = data["value"]["value"]
+            moisture_level = self.map_moisture(new_value)
             old_value = box["plant"]["moisture_level"]
-            self.database.update_box(box_key, {"plant.moisture_level": new_value})
+            self.database.update_box(box_key, {"plant.moisture_level": moisture_level})
+            if moisture_level != old_value:
+                self.state_changed(box_key)
 
     def __on_receive_temperature_data(self, mosq, obj, msg):
         print("Context receive temperature data")
@@ -103,7 +128,8 @@ class ContextComponent:
             new_value = data["value"]["value"]
             old_value = box["temperature"]
             self.database.update_box(box_key, {"temperature": new_value})
-            self.state_changed(box_key)
+            if abs(old_value - new_value) > 5:
+                self.state_changed(box_key)
 
     @staticmethod
     def map(sensor_type, value):

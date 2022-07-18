@@ -7,20 +7,18 @@ class Actuator:
     name: str
 
     type_id: str
-    sensor_type: str
-    instance_id: str
+    actuator_type: str
 
-    def __init__(self, building, room, name, type_id, sensor_type, instance_id):
+    def __init__(self, building, room, name, type_id, actuator_type):
         self.building = building
         self.room = room
         self.name = name
         self.type_id = type_id
-        self.sensor_type = sensor_type
-        self.instance_id = instance_id
-        print(f"Init actuator: type: '{type_id}' sensor_type:'{sensor_type}' instance: '{instance_id} ")
+        self.actuator_type = actuator_type
+        print(f"Init actuator: type: '{type_id}' sensor_type:'{actuator_type}' ")
 
     def get_topic(self):
-        return f"{self.building}/{self.room}/{self.name}/{self.sensor_type}/{self.instance_id}"
+        return f"{self.building}/{self.room}/{self.name}/{self.actuator_type}"
 
     @abstractmethod
     def init(self):

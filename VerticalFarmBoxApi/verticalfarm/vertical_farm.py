@@ -28,7 +28,7 @@ class VerticalFarm:
 
         self.gateway.subscribe_to("+/+/+/+/+", self.__save_to_db)
         self.orchestrator = Orchestrator(self.gateway)
-        self.planner = Planner()
+        self.planner = Planner(self.orchestrator)
         self.context = ContextComponent(self.gateway, self.dbClient, self.planner)
         self.context.init()
         # test = self.planner.solve()

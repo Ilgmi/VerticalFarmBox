@@ -1,0 +1,17 @@
+<mat-toolbar class="example-header">Header</mat-toolbar>
+
+<mat-sidenav-container class="example-container">
+    <mat-sidenav #sidenav mode="side" opened class="example-sidenav"
+                 [fixedInViewport]="false" [fixedTopGap]="0"
+                 [fixedBottomGap]="0">
+        <mat-nav-list>
+            <a mat-list-item routerLink="." >Boxes</a>
+        </mat-nav-list>
+    </mat-sidenav>
+
+    <mat-sidenav-content >
+        <router-outlet></router-outlet>
+    </mat-sidenav-content>
+</mat-sidenav-container>
+
+<mat-toolbar class="example-footer">Footer</mat-toolbar>

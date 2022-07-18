@@ -1,5 +1,6 @@
 (define (problem plantfarm) (:domain smartPlantFarm)
 (:objects
+    b0 - box
     t0 - temperature
     h0 - humidity 
     m0 - moisture

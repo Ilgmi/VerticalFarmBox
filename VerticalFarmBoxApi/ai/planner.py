@@ -2,14 +2,17 @@ import os
 
 import requests
 
-from verticalfarm.domain.greenhouse_box import GreenhouseBox
+from verticalfarm.domain.plant import MoistureLevel
+from verticalfarm.orchestrator import Orchestrator
 
 
 class Planner:
+    orchestrator: Orchestrator
 
-    solve_map = {}
+    def __init__(self, orchestrator: Orchestrator):
+        self.orchestrator = orchestrator
 
-    def solve(self, box):
+    def solve(self, box_key, box):
         print("request function help ")
         dir_name = os.path.dirname(os.getcwd())
         print(dir_name)
@@ -44,6 +47,13 @@ class Planner:
                 problem_string = problem_string.replace("$$show_text_state$$", "is_change_water_text_shown")
                 problem_string = problem_string.replace("$$show_text_state_goal$$", "is_change_water_text_not_shown")
 
+            if box["plant"]["moisture_level"] == MoistureLevel.dry:
+                problem_string = problem_string.replace("$$soil_state$$", "is_soil_dry")
+
+            if box["plant"]["moisture_level"] == MoistureLevel.wet or box["plant"][
+                "moisture_level"] == MoistureLevel.very_wet:
+                problem_string = problem_string.replace("$$soil_state$$", "is_soil_wet")
+
             problem_string = problem_string.replace("$$actual_temp$$", str(box["temperature"]))
             problem_string = problem_string.replace("$$actual_hum$$", str(box["humidity"]))
 
@@ -63,7 +73,8 @@ class Planner:
                 'problem': problem_string
             }
 
+            response = requests.post("http://solver.planning.domains/solve", verify=False, json=json).json()
 
-            response = requests.post("http://solver.planning.domains/solve", json=json).json()
-            print("made request")
-            return response
+            if response["status"] == "ok":
+                plan = response["result"]["plan"]
+                self.orchestrator.handle_new_plan(box_key, plan)
