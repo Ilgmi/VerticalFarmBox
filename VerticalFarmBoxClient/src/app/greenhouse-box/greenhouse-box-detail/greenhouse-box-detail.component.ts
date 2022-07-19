@@ -88,4 +88,21 @@ export class GreenhouseBoxDetailComponent implements OnInit {
     });
   }
 
+  direction = false;
+  state = false;
+
+  rotate(steps: number, direction: boolean, state: boolean) {
+    console.log(steps, direction, state);
+    this.boxService.rotateRoof(this.box, direction, steps, state ? 1 : 0).subscribe({
+      next: () => this._snackBar.open('moved ', 'Ok'),
+      error: () => this._snackBar.open('moved', 'Ok')
+    });
+  }
+
+  waterChanged() {
+    this.boxService.waterChanged(this.box).subscribe({
+      next: () => this._snackBar.open('moved ', 'Ok'),
+      error: () => this._snackBar.open('moved', 'Ok')
+    });
+  }
 }

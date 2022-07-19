@@ -6,7 +6,7 @@ import grovepi
 class WaterPump(Actuator):
     mqtt_client: MQTTClient
 
-    relay = 3
+    relay = 8
 
     def __init__(self, mqtt_client, building, room, name, type_id):
         super().__init__(building, room, name, type_id, "water-pump")

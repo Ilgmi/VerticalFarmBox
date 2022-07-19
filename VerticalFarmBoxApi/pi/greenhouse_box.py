@@ -65,14 +65,14 @@ class GreenhouseBox:
 
         type_id = "de.uni-stuttgart.iaas.sc"
 
-        # self.sensors.append(Temperature(self.mqttClient, self.building, self.room, self.name, type_id, "1"))
-        # self.sensors.append(Humidity(self.mqttClient, self.building, self.room, self.name, type_id, "1"))
+        self.sensors.append(Temperature(self.mqttClient, self.building, self.room, self.name, type_id, "1"))
+        self.sensors.append(Humidity(self.mqttClient, self.building, self.room, self.name, type_id, "1"))
         self.sensors.append(Moisture(self.mqttClient, self.building, self.room, self.name, type_id, "1"))
-        # self.sensors.append(Light(self.mqttClient, self.building, self.room, self.name, type_id, "1"))
-        #
-        # self.actuators.append(WaterPump(self.mqttClient, self.building, self.room, self.name, type_id))
-        # self.actuators.append(Display(self.mqttClient, self.building, self.room, self.name, type_id))
-        # self.actuators.append(Roof(self.mqttClient, self.building, self.room, self.name, type_id))
+        self.sensors.append(Light(self.mqttClient, self.building, self.room, self.name, type_id, "1"))
+
+        self.actuators.append(WaterPump(self.mqttClient, self.building, self.room, self.name, type_id))
+        self.actuators.append(Display(self.mqttClient, self.building, self.room, self.name, type_id))
+        self.actuators.append(Roof(self.mqttClient, self.building, self.room, self.name, type_id))
 
 
         return result.ok
@@ -86,10 +86,12 @@ class GreenhouseBox:
         # for thread in self.threads:
         #     thread.start()
 
-        print("Threads started")
+        print("Actuators")
+        for actuator in self.actuators:
+            actuator.init()
 
         while True:
-            print('sldkjfölkdsajflösakdjf')
+            print('new selection round')
             for sensor in self.sensors:
                 sensor.collect_data()
             time.sleep(5)

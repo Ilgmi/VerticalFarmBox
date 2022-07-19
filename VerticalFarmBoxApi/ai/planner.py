@@ -1,4 +1,5 @@
 import os
+import traceback
 
 import requests
 
@@ -64,7 +65,7 @@ class Planner:
             problem_string = problem_string.replace("$$max_humidity$$", str(box["humidity_condition"]["max_val"]))
 
             problem_string = problem_string.replace("$$watering_count$$", str(box["watering_plants"]))
-            problem_string = problem_string.replace("$$max_watering_count$$", str(20))
+            problem_string = problem_string.replace("$$max_watering_count$$", str(5))
 
             print("files read")
 
@@ -73,8 +74,12 @@ class Planner:
                 'problem': problem_string
             }
 
-            response = requests.post("http://solver.planning.domains/solve", verify=False, json=json).json()
+            try:
 
-            if response["status"] == "ok":
-                plan = response["result"]["plan"]
-                self.orchestrator.handle_new_plan(box_key, plan)
+                response = requests.post("http://solver.planning.domains/solve", verify=False, json=json).json()
+
+                if response["status"] == "ok":
+                    plan = response["result"]["plan"]
+                    self.orchestrator.handle_new_plan(box_key, plan)
+            except:
+                print('error')

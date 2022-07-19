@@ -15,6 +15,8 @@ class Roof(Actuator):
     D = 25
     step_sleep = 0.002
 
+    rotate_steps = 50
+
     def __init__(self, mqtt_client, building, room, name, type_id):
         super().__init__(building, room, name, type_id, "roof")
         self.mqtt_client = mqtt_client
@@ -25,10 +27,10 @@ class Roof(Actuator):
 
         self.init_stepper()
 
-        self.left(256)
+        self.left(self.rotate_steps)
         self.cleanup()
 
-        self.mqtt_client.publish_data(self.get_topic() + "roof-opened", "")
+        self.mqtt_client.publish_data(self.get_topic() + "/roof-opened", "")
 
 
 
@@ -38,10 +40,10 @@ class Roof(Actuator):
 
         self.init_stepper()
 
-        self.right(256)
+        self.right(self.rotate_steps)
         self.cleanup()
 
-        self.mqtt_client.publish_data(self.get_topic() + "/roof-opened", "")
+        self.mqtt_client.publish_data(self.get_topic() + "/roof-closed", "")
 
     def __on_init_roof(self, message):
         print(f"close Roof from Topic: '{message.topic}'")
@@ -49,6 +51,7 @@ class Roof(Actuator):
         try:
 
             data = json.loads(message.payload.decode())
+            print(data)
             direction = True
             steps = int(data["steps"])
             direction = bool(data["direction"])

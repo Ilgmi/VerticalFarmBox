@@ -26,4 +26,4 @@ class Humidity(Sensor):
                 "value": humidity
             }
             self.mqtt_Client.publish_data(self.get_topic(), self.get_message(data))
-
+        time.sleep(2)

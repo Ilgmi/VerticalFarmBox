@@ -42,15 +42,16 @@ export class GreenhouseBoxApiService {
     })
   }
 
-  public rotateRoof(box: GreenhouseBox, directoin: boolean, steps: number) {
+  public rotateRoof(box: GreenhouseBox, directoin: boolean, steps: number, state = 0) {
     return this.httpClient.post(`api/buildings/${box.building}/rooms/${box.room}/boxes/${box.name}/move-roof`, {
       direction: directoin,
-      steps: steps
+      steps: steps,
+      state: state
     });
   }
 
   updateConditions(box: GreenhouseBox, conditions: any): Observable<any> {
-    return this.httpClient.put(`api/buildings/${box.building}/rooms/${box.room}/boxes/${box.name}`, conditions);
+    return this.httpClient.put(`api/buildings/${box.building}/rooms/${box.room}/boxes/${box.name}/update-conditions`, conditions);
   }
 
   toggleRoof(box: GreenhouseBox) {
@@ -59,6 +60,10 @@ export class GreenhouseBoxApiService {
 
   public waterPlant(box: GreenhouseBox) {
     return this.httpClient.post(`api/buildings/${box.building}/rooms/${box.room}/boxes/${box.name}/water-plant`, {});
+  }
+
+  waterChanged(box: GreenhouseBox) {
+    return this.httpClient.post(`api/buildings/${box.building}/rooms/${box.room}/boxes/${box.name}/water-changed`, {});
   }
 }
 

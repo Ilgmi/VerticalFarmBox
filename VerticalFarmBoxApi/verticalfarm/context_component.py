@@ -18,14 +18,14 @@ class ContextComponent:
 
     def init(self):
         print("sub to roof-opened")
-        self.gateway.subscribe_to("+/+/+/roof/+/roof-opened", self.__on_roof_opened)
-        self.gateway.subscribe_to("+/+/+/roof/+/roof-closed", self.__on_roof_closed)
+        self.gateway.subscribe_to("+/+/+/roof/roof-opened", self.__on_roof_opened)
+        self.gateway.subscribe_to("+/+/+/roof/roof-closed", self.__on_roof_closed)
 
-        self.gateway.subscribe_to("+/+/+/display/+/text-is-set", self.__on_text_is_set)
-        self.gateway.subscribe_to("+/+/+/display/+/display-cleared", self.__on_display_is_cleared)
+        self.gateway.subscribe_to("+/+/+/display/text-is-set", self.__on_text_is_set)
+        self.gateway.subscribe_to("+/+/+/display/display-cleared", self.__on_display_is_cleared)
 
-        self.gateway.subscribe_to("+/+/+/water-pump/+/pump-started", self.__on_water_pump_started)
-        self.gateway.subscribe_to("+/+/+/water-pump/+/pump-stopped", self.__on_water_pump_stopped)
+        self.gateway.subscribe_to("+/+/+/water-pump/pump-started", self.__on_water_pump_started)
+        self.gateway.subscribe_to("+/+/+/water-pump/pump-stopped", self.__on_water_pump_stopped)
 
         self.gateway.subscribe_to("+/+/+/humidity/+", self.__on_receive_humidity_data)
         self.gateway.subscribe_to("+/+/+/light/+", self.__on_receive_light_data)
@@ -70,8 +70,8 @@ class ContextComponent:
         box_key = self.get_box_key(msg)
         if self.database.has_box(box_key):
             box = self.database.get_box(box_key)
-            watering_plant = int(box["watering_plant"])
-            self.database.update_box(box_key, {"water_pump": 1, "watering_plant": watering_plant + 1})
+            watering_plant = int(box["watering_plants"])
+            self.database.update_box(box_key, {"water_pump": 1, "watering_plants": watering_plant + 1})
 
     def __on_water_pump_stopped(self, mosq, obj, msg):
         print(msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
@@ -114,8 +114,9 @@ class ContextComponent:
             moisture_level = self.map_moisture(new_value)
             old_value = box["plant"]["moisture_level"]
             self.database.update_box(box_key, {"plant.moisture_level": moisture_level})
-            if moisture_level != old_value:
-                self.state_changed(box_key)
+            print(moisture_level, moisture_level)
+            self.state_changed(box_key)
+
 
     def __on_receive_temperature_data(self, mosq, obj, msg):
         print("Context receive temperature data")

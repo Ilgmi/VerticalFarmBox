@@ -1,6 +1,7 @@
 import datetime
 import json
 import re
+import traceback
 from abc import abstractmethod
 from dataclasses import dataclass
 from typing import List
@@ -91,17 +92,19 @@ class MongoDBConnector(DBConnector):
         result = self.box.update_one({'_id': key}, new_values)
 
     def add_sensor_data(self, key, message):
-        try:
-            self.sensor_data.insert_one({
-                "key": key,
-                "type_id": message["type_id"],
-                "sensor_type": message["sensor_type"],
-                "instance_id": message["instance_id"],
-                "timestamp": message["timestamp"],
-                "value": message["value"]
-            })
-        except:
-            print("parse error")
+        if message != {}:
+            try:
+                self.sensor_data.insert_one({
+                    "key": key,
+                    "type_id": message["type_id"],
+                    "sensor_type": message["sensor_type"],
+                    "instance_id": message["instance_id"],
+                    "timestamp": message["timestamp"],
+                    "value": message["value"]
+                })
+            except:
+                print("parse error", key, message)
+
 
     def get_sensors_data(self, box_key: str):
 

@@ -45,8 +45,17 @@ class RegisterSensorMessage(BaseModel):
     sensor_type: str
 
 class MoveRoof(BaseModel):
-    directoin: bool
+    direction: bool
     steps: int
+    state: int
+
+class Condition(BaseModel):
+    min_val: int
+    max_val: int
+
+class UpdateConditions(BaseModel):
+    temperature_condition: Condition
+    humidity_condition: Condition
 
 
 @app.get("/")
@@ -92,6 +101,14 @@ async def get_sensors_data(building, room, box):
 async def get_sensors_data(building, room, box, move_roof: MoveRoof):
     return verticalFarm.move_roof(building + "/" + room + "/" + box, move_roof)
 
+
+@app.put("/api/buildings/{building}/rooms/{room}/boxes/{box}/update-conditions")
+async def get_sensors_data(building, room, box, conditions: UpdateConditions):
+    return verticalFarm.update_conditions(building + "/" + room + "/" + box, conditions)
+
+@app.post("/api/buildings/{building}/rooms/{room}/boxes/{box}/water-changed")
+async def water_changed(building, room, box):
+    return verticalFarm.water_changed(building + "/" + room + "/" + box)
 
 @app.get("/api/boxes/{box_name}/sensors")
 async def get_sernsors_from_boxes(box_name: str):

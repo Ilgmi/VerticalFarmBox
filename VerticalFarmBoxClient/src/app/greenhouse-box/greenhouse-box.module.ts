@@ -7,7 +7,7 @@ import { GreenhouseBoxDetailComponent } from './greenhouse-box-detail/greenhouse
 import {MatCardModule} from '@angular/material/card';
 import {MatListModule} from '@angular/material/list';
 import {MatButtonModule} from '@angular/material/button';
-import {ReactiveFormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatSliderModule} from '@angular/material/slider';
 import {MatInputModule} from '@angular/material/input';
@@ -15,6 +15,7 @@ import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {LineChartModule, NgxChartsModule} from '@swimlane/ngx-charts';
 import { SensorDataComponent } from './greenhouse-box-detail/sensor-data/sensor-data.component';
 import {MatTabsModule} from '@angular/material/tabs';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 
 
 @NgModule({
@@ -36,6 +37,8 @@ import {MatTabsModule} from '@angular/material/tabs';
     MatButtonToggleModule,
     NgxChartsModule,
     MatTabsModule,
+    MatSlideToggleModule,
+    FormsModule,
   ]
 })
 export class GreenhouseBoxModule { }

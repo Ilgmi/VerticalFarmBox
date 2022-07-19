@@ -39,7 +39,7 @@
         ($$pump_state_goal$$ p0)
         ($$roof_state_goal$$ r0)
         ($$show_text_state_goal$$ d0)
-        (is_done b0)
+
         )
 )
 

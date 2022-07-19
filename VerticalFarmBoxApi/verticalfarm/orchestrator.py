@@ -38,13 +38,25 @@ class Orchestrator:
         self.gateway = gateway
 
     def handle_new_plan(self, box_key, plan):
-        pass
+        print(plan)
         actions = self.actor_actions.keys()
         for act in plan:
             for action in actions:
-                if act.find(action.lower()) != -1:
+                if type(act) is dict:
+                    if act["name"].find(action.lower()) != -1:
+                        print(act)
+                        print(self.actor_actions[action])
+
+                        if action == "show_change_water_text":
+                            self.send(box_key, self.actor_actions[action]["type"], self.actor_actions[action]["action"],
+                                      {"message": self.actor_actions[action]["data"]})
+                        else:
+                            self.send(box_key, self.actor_actions[action]["type"], self.actor_actions[action]["action"])
+                elif act.find(action.lower()) != -1:
+                    print(act)
                     print(self.actor_actions[action])
-                    self.send(box_key, self.actor_actions[action]["type"], self.actor_actions[action]["type"])
+                    self.send(box_key, self.actor_actions[action]["type"], self.actor_actions[action]["action"])
+
 
     def send(self, box_key, actuator, action, data=None):
         if data is None:

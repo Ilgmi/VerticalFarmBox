@@ -98,6 +98,17 @@
                     <button class="ml-2" mat-flat-button color="primary" (click)="waterPlant()">Water Plant</button>
                 </div>
                 <div class="p-2">
+                    <button class="ml-2" mat-flat-button color="primary" (click)="waterChanged()">Water Changed</button>
+                </div>
+                <div class="p-2">
+                    <input type="number" matInput #steps>
+                    <mat-slide-toggle [(ngModel)]="direction">Left/Right</mat-slide-toggle>
+                    <mat-slide-toggle [(ngModel)]="state">Open/Close</mat-slide-toggle>
+
+                    <button mat-flat-button color="primary" (click)="rotate(steps.valueAsNumber,
+                    direction, state)" >rotate roof</button>
+                </div>
+                <div class="p-2">
                     <button mat-flat-button color="primary" [disabled]="!conditionForm.dirty || conditionForm.invalid" (click)="updateConditions()">Save
                     </button>
                 </div>

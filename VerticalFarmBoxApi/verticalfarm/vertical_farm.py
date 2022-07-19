@@ -1,6 +1,5 @@
 import json
 import threading
-import time
 
 from ai.planner import Planner
 from pi.udp_client import UdpClient
@@ -109,4 +108,26 @@ class VerticalFarm:
             self.orchestrator.send(box_id, 'water-pump', "start-pump")
 
     def move_roof(self, box_id, move_roof):
-        self.orchestrator.send(box_id, 'roof', "init", move_roof)
+        if not self.dbClient.has_box(box_id):
+            return False
+        self.dbClient.update_box(box_id, {"roof": 0})
+        self.orchestrator.send(box_id, 'roof', "init", {
+            "direction": move_roof.direction,
+            "steps": move_roof.steps
+        })
+
+    def update_conditions(self, box_id, conditions):
+        if not self.dbClient.has_box(box_id):
+            return False
+
+        update_string = {"temperature_condition.min_val": conditions.temperature_condition.min_val,
+                         "temperature_condition.max_val": conditions.temperature_condition.max_val,
+                         "humidity_condition.min_val": conditions.humidity_condition.min_val,
+                         "humidity_condition.max_val": conditions.humidity_condition.max_val,
+                         }
+        self.dbClient.update_box(box_id, update_string)
+
+    def water_changed(self, box_id):
+        if not self.dbClient.has_box(box_id):
+            return False
+        self.dbClient.update_box(box_id, {"watering_plants": 0})

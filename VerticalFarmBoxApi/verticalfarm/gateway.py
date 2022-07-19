@@ -46,6 +46,7 @@ class Gateway:
         self.on_sensor_receive_data_call_back.append(func)
 
     def send_action(self, topic, action):
+        print("Send Action to", topic, "with data", action)
         self.mqtt_client.publish(topic, json.dumps(action))
 
     def subscribe_to(self, topic, fuc):
