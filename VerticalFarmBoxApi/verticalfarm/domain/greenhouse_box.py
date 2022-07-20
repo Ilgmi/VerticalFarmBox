@@ -13,7 +13,7 @@ class GreenhouseBox:
     name: str
     connection_state: bool
     created: str
-    updated: str | None
+    updated: str
 
     roof = 0
     water_pump = 0

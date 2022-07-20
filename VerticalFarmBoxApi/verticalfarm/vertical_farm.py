@@ -41,7 +41,7 @@ class VerticalFarm:
         # self.vertical_farmDb = self.dbClient.vertical_farm
 
     def listen_to_box_connections(self):
-        udpClient = UdpClient("192.168.2.110", "224.1.1.5", 10000)
+        udpClient = UdpClient("192.168.2.100", "224.1.1.5", 10000)
         t = threading.Thread(name="provide-multicast-request", target=lambda: udpClient.wait_for_backend_requests())
         t.start()
 

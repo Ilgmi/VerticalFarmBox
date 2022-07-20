@@ -10,6 +10,7 @@ from dateutil.parser import parse
 from pymongo import MongoClient
 from pymongo.collection import Collection
 
+
 from verticalfarm.domain.greenhouse_box import GreenhouseBox, BoxEncoder
 from verticalfarm.messages import SensorDataMessage, RegisterBoxMessage
 

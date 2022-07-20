@@ -1,3 +1,4 @@
 mongo-volume
 mosquitto-config/log
 mosquitto-config/data
+static

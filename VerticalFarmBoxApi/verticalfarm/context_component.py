@@ -89,8 +89,9 @@ class ContextComponent:
             new_value = data["value"]["value"]
             old_value = box["humidity"]
             self.database.update_box(box_key, {"humidity": new_value})
-            if abs(new_value - old_value) > 5:
-                self.state_changed(box_key)
+            self.state_changed(box_key)
+            #if abs(new_value - old_value) > 5:
+            #    self.state_changed(box_key)
 
     def __on_receive_light_data(self, mosq, obj, msg):
         print("Context receive light data")
@@ -129,8 +130,9 @@ class ContextComponent:
             new_value = data["value"]["value"]
             old_value = box["temperature"]
             self.database.update_box(box_key, {"temperature": new_value})
-            if abs(old_value - new_value) > 5:
-                self.state_changed(box_key)
+            self.state_changed(box_key)
+            #if abs(old_value - new_value) > 5:
+            #    self.state_changed(box_key)
 
     @staticmethod
     def map(sensor_type, value):

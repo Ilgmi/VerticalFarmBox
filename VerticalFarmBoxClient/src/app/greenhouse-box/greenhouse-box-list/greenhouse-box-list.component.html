@@ -3,9 +3,14 @@
         <mat-card *ngFor="let box of greenhouseBoxes$ | async; index as i" class="box-card">
             <mat-card-title>
                 {{box.name}}
+
             </mat-card-title>
             <mat-card-content>
                 <div class="d-flex flex-column">
+                    <div class="row" *ngIf="box.watering_plants > 5">
+                        <div class="col">Water Quality</div>
+                        <div class="col">Please Change the Water</div>
+                    </div>
                     <div class="row">
                         <div class="col">Roof</div>
                         <div class="col">

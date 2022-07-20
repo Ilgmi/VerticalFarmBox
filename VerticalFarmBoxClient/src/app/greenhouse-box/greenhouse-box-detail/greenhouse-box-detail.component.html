@@ -8,6 +8,10 @@
             <div class="p-2">
                 <mat-divider></mat-divider>
                 <div class="d-flex flex-column p-2">
+                    <div class="row" *ngIf="box.watering_plants > 5">
+                        <div class="col">Water Quality</div>
+                        <div class="col text-danger">Please Change the Water</div>
+                    </div>
                     <div class="row">
                         <div class="col">Roof</div>
                         <div class="col">
