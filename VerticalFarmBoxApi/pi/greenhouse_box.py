@@ -44,6 +44,7 @@ class GreenhouseBox:
         self.udpClient.find_backend()
 
     def __on_backend_send_ip(self, ip):
+        print("found backend ip", ip)
         self.backend_ip = ip
 
     def register_to_backend(self):
@@ -60,6 +61,7 @@ class GreenhouseBox:
             "room": self.room,
             "name": self.name
         })
+        print(f"send request to http://{ip}:8000/api/boxes")
         result = requests.post(f"http://{ip}:8000/api/boxes", msg)
         print(result.ok)
 
